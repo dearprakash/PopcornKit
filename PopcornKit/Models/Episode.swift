@@ -86,8 +86,7 @@ public struct Episode: Media, Equatable {
         }
         self.show = try? map.value("show") // Will only not be `nil` if object is mapped from JSON array, otherwise this is set in `Show` struct.
         self.firstAirDate =  try map.value("first_aired", using: DateTransform())
-        self.summary =  (try? map.value("overview")) ?? "No summary available."
-        summary = summary.replacingOccurrences(of: "\"", with: "") // Stop issues with escaping characters in xml
+        self.summary = ((try? map.value("overview")) ?? "No summary available.").replacingOccurrences(of: "\"", with: "") // Stop issues with escaping characters in xml
         self.season = try map.value("season")
         let episode = self.episode // Stop compiler complaining about passing uninitialised variables to closure.
         self.title = (try? map.value("title")) ?? "Episode \(episode)"

@@ -119,7 +119,7 @@ public struct Show: Media, Equatable {
             self.airDay = try? map.value("air_day")
             self.airTime = try? map.value("air_time")
         }
-        self.summary = (try? map.value("synopsis")) ?? "No summary available."
+        self.summary = ((try? map.value("synopsis")) ?? "No summary available.").replacingOccurrences(of: "\"", with: "") // Stop issues with escaping characters in xml
         self.title = try map.value("title")
         self.status = try? map.value("status")
         self.runtime = try? map.value("runtime")

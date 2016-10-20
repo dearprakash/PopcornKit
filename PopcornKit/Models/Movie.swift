@@ -106,7 +106,7 @@ public struct Movie: Media, Equatable {
             self.id = try map.value("ids.imdb")
             self.year = try map.value("year", using: StringTransform())
             self.rating = try map.value("rating")
-            self.summary = try map.value("overview") ?? "No summary available."
+            self.summary = ((try? map.value("overview")) ?? "No summary available.").replacingOccurrences(of: "\"", with: "") // Stop issues with escaping characters in xml
             self.largeCoverImage = try? map.value("images.poster.full")
             self.largeBackgroundImage = try? map.value("images.fanart.full")
             self.runtime = try map.value("runtime", using: StringTransform())
@@ -114,7 +114,7 @@ public struct Movie: Media, Equatable {
             self.id = try map.value("imdb_id")
             self.year = try map.value("year")
             self.rating = try map.value("rating.percentage")
-            self.summary = try map.value("synopsis") ?? "No summary available."
+            self.summary = ((try? map.value("synopsis")) ?? "No summary available.").replacingOccurrences(of: "\"", with: "") // Stop issues with escaping characters in xml
             self.largeCoverImage = try? map.value("images.poster")
             self.largeBackgroundImage = try? map.value("images.fanart")
             self.runtime = try map.value("runtime")
