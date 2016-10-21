@@ -70,7 +70,7 @@ open class SubtitlesManager: NetworkManager {
      - Parameter completion:    Optional completion handler called when request is sucessfull.
      - Parameter error:         Optional error completion handler called when request fails or username/password is incorrect.
      */
-    private func login(_ completion: ((NSError?) -> Void)?) {
+    public func login(_ completion: ((NSError?) -> Void)?) {
         var username = ""
         var password = ""
         if let credential = URLCredentialStorage.shared.credentials(for: protectionSpace)?.values.first {
