@@ -28,7 +28,14 @@ open class SubtitlesManager: NetworkManager {
      
      - Parameter completion:    Completion handler called with array of subtitles and an optional error.
      */
-    open func search(_ episode: Episode? = nil, imdbId: String? = nil, limit: String = "300", completion:@escaping (_ subtitles: [Subtitle], _ error: NSError?) -> Void) {
+    open func search(_ episode: Episode? = nil, imdbId: String? = nil, limit: String = "300", completion:@escaping ([Subtitle], NSError?) -> Void) {
+        guard let token = token else {
+            login() { error in
+                guard error == nil else { completion([Subtitle](), error); return }
+                self.search(episode, imdbId: imdbId, limit: limit, completion: completion)
+            }
+            return
+        }
         var params = ["sublanguageid": "all"]
         if let imdbId = imdbId {
             params["imdbid"] = imdbId.replacingOccurrences(of: "tt", with: "")
@@ -39,7 +46,7 @@ open class SubtitlesManager: NetworkManager {
         }
         let limit = ["limit": limit]
         let queue = DispatchQueue(label: "com.popcorn-time.response.queue", attributes: DispatchQueue.Attributes.concurrent)
-        self.manager.requestXMLRPC(secureBaseURL, methodName: "SearchSubtitles", parameters: [token!, [params], limit], headers: ["User-Agent": userAgent]).validate().responseXMLRPC(queue: queue, completionHandler: { response in
+        self.manager.requestXMLRPC(secureBaseURL, methodName: "SearchSubtitles", parameters: [token, [params], limit], headers: ["User-Agent": userAgent]).validate().responseXMLRPC(queue: queue, completionHandler: { response in
             guard let value = response.result.value,
                 let status = value[0]["status"].string?.components(separatedBy: " ").first,
                 let data = value[0]["data"].array
@@ -63,7 +70,7 @@ open class SubtitlesManager: NetworkManager {
      - Parameter completion:    Optional completion handler called when request is sucessfull.
      - Parameter error:         Optional error completion handler called when request fails or username/password is incorrect.
      */
-    open func login(_ completion: (() -> Void)?, error: ((_ error: NSError) -> Void)? = nil) {
+    private func login(_ completion: ((NSError?) -> Void)?) {
         var username = ""
         var password = ""
         if let credential = URLCredentialStorage.shared.credentials(for: protectionSpace)?.values.first {
@@ -75,11 +82,29 @@ open class SubtitlesManager: NetworkManager {
                 let status = value[0]["status"].string?.components(separatedBy: " ").first
                 , response.result.isSuccess && status == "200" else {
                     let statusError = response.result.error ?? NSError(domain: "com.AlamofireXMLRPC.error", code: -403, userInfo: [NSLocalizedDescriptionKey: "Username or password is incorrect."])
-                    error?(statusError as NSError)
+                    completion?(statusError as NSError)
                     return
             }
             self.token = value[0]["token"].string
-            completion?()
+            completion?(nil)
+        }
+    }
+    
+    /**
+     Logout of OpenSubtitles API. Logging out is not necessary, but good practise after an application's lifecycle has been ended. If the API was never logged-in to, the user will not be logged out.
+     
+     - Parameter completion: Optional completion handler called when request fails or is sucessfull. Failure indicated by optional error.
+     */
+    open func logout(completion: ((NSError?) -> Void)? = nil) {
+        guard let token = token else { return }
+        self.manager.requestXMLRPC(secureBaseURL, methodName: "LogOut", parameters: [token], headers: ["User-Agent": userAgent]).validate().responseXMLRPC { (response) in
+            guard let value = response.result.value,
+                let status = value[0]["status"].string?.components(separatedBy: " ").first
+                , response.result.isSuccess && status == "200" else {
+                    completion?(response.result.error as NSError?)
+                    return
+            }
+            completion?(nil)
         }
     }
 }
