@@ -11,6 +11,9 @@ public class ThemeSongManager: NSObject, AVAudioPlayerDelegate {
     /// Global player ref.
     private var player: AVAudioPlayer!
     
+    /// Global download task ref.
+    private var task: URLSessionTask?
+    
     /// Creates new instance of AnimeManager class
     public static let shared: ThemeSongManager = ThemeSongManager()
     
@@ -44,7 +47,7 @@ public class ThemeSongManager: NSObject, AVAudioPlayerDelegate {
     private func playTheme(_ url: String) {
         if let player = player, player.isPlaying { player.stop() }
         
-        URLSession.shared.dataTask(with: URL(string: url)!, completionHandler: { (data, response, error) in
+        self.task = URLSession.shared.dataTask(with: URL(string: url)!, completionHandler: { (data, response, error) in
             do {
                 if let data = data {
                     try AVAudioSession.sharedInstance().setCategory(AVAudioSessionCategoryPlayback)
@@ -60,7 +63,8 @@ public class ThemeSongManager: NSObject, AVAudioPlayerDelegate {
             } catch let error {
                 print(error)
             }
-        }).resume()
+        })
+        task?.resume()
     }
     
     /**
@@ -82,6 +86,8 @@ public class ThemeSongManager: NSObject, AVAudioPlayerDelegate {
         fadeTo(volume: 0, duration: 1.0)
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
             self.player?.stop()
+            self.task?.cancel()
+            self.task = nil
         }
     }
 }
