@@ -9,7 +9,7 @@ import SwiftyJSON
 public class ThemeSongManager: NSObject, AVAudioPlayerDelegate {
     
     /// Global player ref.
-    private var player: AVAudioPlayer?
+    private var player: AVAudioPlayer!
     
     /// Creates new instance of AnimeManager class
     public static let shared: ThemeSongManager = ThemeSongManager()
@@ -48,15 +48,14 @@ public class ThemeSongManager: NSObject, AVAudioPlayerDelegate {
             do {
                 if let data = data {
                     try AVAudioSession.sharedInstance().setCategory(AVAudioSessionCategoryPlayback)
-                    try AVAudioSession.sharedInstance().setActive(true)
-                    
-                    let volume = UserDefaults.standard.float(forKey: "ThemeSongVolume")
                     
                     self.player = try AVAudioPlayer(data: data)
-                    self.player!.volume = volume
-                    self.player!.delegate = self
-                    self.player!.prepareToPlay()
-                    self.player!.play()
+                    self.player.volume = 0
+                    self.player.numberOfLoops = NSNotFound
+                    self.player.delegate = self
+                    self.player.prepareToPlay()
+                    self.player.play()
+                    self.fadeTo(volume: UserDefaults.standard.float(forKey: "ThemeSongVolume"))
                 }
             } catch let error {
                 print(error)
@@ -64,13 +63,26 @@ public class ThemeSongManager: NSObject, AVAudioPlayerDelegate {
         }).resume()
     }
     
-    /// Stops playing theme music, if previously playing.
-    public func stopTheme() {
-        self.player?.stop()
+    /**
+     Fades player volume to specified volume in specified amount of seconds (defaults to 3.0) if available. Devices under 10.0 will just go straight to specified volume.
+     
+     - Parameter volume:    Volume to fade to.
+     - Parameter duration:  The total time the song will fade out for. Defaults to 3 seconds.
+     */
+    private func fadeTo(volume: Float, duration: TimeInterval = 3.0) {
+        if #available(tvOS 10.0, iOS 10.0, *) {
+            self.player?.setVolume(volume, fadeDuration: duration)
+        } else {
+            self.player?.volume = volume
+        }
     }
     
-    public func audioPlayerDidFinishPlaying(_ player: AVAudioPlayer, successfully flag: Bool) {
-        self.player = nil
+    /// Stops playing theme music, if previously playing.
+    public func stopTheme() {
+        fadeTo(volume: 0, duration: 1.0)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+            self.player?.stop()
+        }
     }
 }
 
