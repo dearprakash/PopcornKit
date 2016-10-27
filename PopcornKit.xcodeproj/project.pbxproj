@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		4D1589401DC244630000B8EF /* ThemeSongManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D15893F1DC244630000B8EF /* ThemeSongManager.swift */; };
+		4D1589411DC244630000B8EF /* ThemeSongManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D15893F1DC244630000B8EF /* ThemeSongManager.swift */; };
 		4D3FF71E1D8DE3AB0006AF18 /* SubtitlesManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4DE3354E1D85A9EA00B6AB6D /* SubtitlesManager.swift */; };
 		4D44824D1DA18D9C00A7FF0E /* WatchlistManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D44824C1DA18D9C00A7FF0E /* WatchlistManager.swift */; };
 		4D44824E1DA18D9C00A7FF0E /* WatchlistManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D44824C1DA18D9C00A7FF0E /* WatchlistManager.swift */; };
@@ -90,6 +92,7 @@
 		1C3B83C0CE981E8D384FB2EF /* Pods-PopcornKit tvOS.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PopcornKit tvOS.release.xcconfig"; path = "Pods/Target Support Files/Pods-PopcornKit tvOS/Pods-PopcornKit tvOS.release.xcconfig"; sourceTree = "<group>"; };
 		2ED5ADA795CF0F965FF72264 /* Pods-PopcornKitTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PopcornKitTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-PopcornKitTests/Pods-PopcornKitTests.release.xcconfig"; sourceTree = "<group>"; };
 		3FBD9D2FCC4B44FECC1C6DD6 /* Pods-PopcornKitTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PopcornKitTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-PopcornKitTests/Pods-PopcornKitTests.debug.xcconfig"; sourceTree = "<group>"; };
+		4D15893F1DC244630000B8EF /* ThemeSongManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ThemeSongManager.swift; path = Network/ThemeSongManager.swift; sourceTree = "<group>"; };
 		4D208DA01D8460BA00CB8EDB /* Person.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Person.swift; path = Models/Person.swift; sourceTree = "<group>"; };
 		4D208DA21D84614100CB8EDB /* Media.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Media.swift; path = Models/Media.swift; sourceTree = "<group>"; };
 		4D208DA41D8461D200CB8EDB /* Subtitle.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Subtitle.swift; path = Models/Subtitle.swift; sourceTree = "<group>"; };
@@ -283,6 +286,7 @@
 				4DE3354E1D85A9EA00B6AB6D /* SubtitlesManager.swift */,
 				4DE335501D85D42500B6AB6D /* WatchedlistManager.swift */,
 				4D44824C1DA18D9C00A7FF0E /* WatchlistManager.swift */,
+				4D15893F1DC244630000B8EF /* ThemeSongManager.swift */,
 			);
 			name = Network;
 			sourceTree = "<group>";
@@ -575,6 +579,7 @@
 				4D6901391D872E3D00F26AD9 /* Actor.swift in Sources */,
 				4D6901321D872E3D00F26AD9 /* SubtitlesManager.swift in Sources */,
 				4D6901361D872E3D00F26AD9 /* Movie.swift in Sources */,
+				4D1589401DC244630000B8EF /* ThemeSongManager.swift in Sources */,
 				4D44824D1DA18D9C00A7FF0E /* WatchlistManager.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -605,6 +610,7 @@
 				4D6901121D872E3B00F26AD9 /* Person.swift in Sources */,
 				4D6901481D8736F600F26AD9 /* NSData+GZIP.m in Sources */,
 				4D69010B1D872E3B00F26AD9 /* Episode.swift in Sources */,
+				4D1589411DC244630000B8EF /* ThemeSongManager.swift in Sources */,
 				4DEA8A641D90552500224342 /* TraktAuthenticationViewController.swift in Sources */,
 				4D6901051D872E3B00F26AD9 /* AnimeManager.swift in Sources */,
 				4D6901421D872FD200F26AD9 /* PopcornKit.swift in Sources */,
