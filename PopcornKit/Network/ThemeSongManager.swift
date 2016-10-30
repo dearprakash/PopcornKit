@@ -58,7 +58,7 @@ public class ThemeSongManager: NSObject, AVAudioPlayerDelegate {
                     self.player.delegate = self
                     self.player.prepareToPlay()
                     self.player.play()
-                    self.fadeTo(volume: UserDefaults.standard.float(forKey: "ThemeSongVolume"))
+                    self.fadeTo(volume: UserDefaults.standard.float(forKey: "themeSongVolume"))
                 }
             } catch let error {
                 print(error)
