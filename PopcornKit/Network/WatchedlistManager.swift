@@ -92,7 +92,7 @@ open class WatchedlistManager {
         TraktManager.shared.scrobble(id, progress: progress, type: currentType, status: status)
         var dict = UserDefaults.standard.object(forKey: "\(currentType.rawValue)VideoProgress") as? [String: Float] ?? [String: Float]()
         dict[id] = progress
-        progress >= 0.8 ? add(id) : remove(id)
+        progress >= 0.8 ? add(id) : ()
         UserDefaults.standard.set(dict, forKey: "\(currentType.rawValue)VideoProgress")
     }
     
