@@ -169,7 +169,7 @@ public func downloadSubtitleFile(
         return (zippedFilePath, .removePreviousFile)
     }.validate().response { response in
         guard response.error == nil else {completion(nil, response.error as NSError?); return }
-        let filePath = downloadDirectory.appendingPathExtension(fileName.replacingOccurrences(of: ".gz", with: ""))
+        let filePath = downloadDirectory.appendingPathComponent(fileName.replacingOccurrences(of: ".gz", with: ""))
         FileManager.default.createFile(atPath: filePath.path, contents: (FileManager.default.contents(atPath: zippedFilePath.path)! as NSData).gunzipped(), attributes: nil)
          #if os(iOS)
             completion(convertToVTT ? SRT.sharedConverter().convertFile(toVTT: filePath) : filePath, nil)
