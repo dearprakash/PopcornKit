@@ -12,9 +12,6 @@ open class WatchedlistManager {
     /// Creates new instance of WatchedlistManager class with type of Episodes.
     open static let episode = WatchedlistManager(type: .episodes)
     
-    /// Creates new instance of WatchedlistManager class with type of Shows.
-    open static let show = WatchedlistManager(type: .shows)
-    
     private init(type: Trakt.MediaType) {
         currentType = type
     }
@@ -27,6 +24,7 @@ open class WatchedlistManager {
     open func toggle(_ id: String) {
         isAdded(id) ? remove(id): add(id)
     }
+    
     /**
      Adds movie or episode to watchedlist and syncs with Trakt if available.
      
@@ -35,9 +33,10 @@ open class WatchedlistManager {
     open func add(_ id: String) {
         TraktManager.shared.scrobble(id, progress: 1, type: currentType, status: .finished)
         var array = UserDefaults.standard.object(forKey: "\(currentType.rawValue)Watchedlist") as? [String] ?? [String]()
-        array.append(id)
+        !array.contains(id) ? array.append(id) : ()
         UserDefaults.standard.set(array, forKey: "\(currentType.rawValue)Watchedlist")
     }
+    
     /**
      Removes movie or episode from a users watchedlist and syncs with Trakt if available.
      
@@ -45,15 +44,13 @@ open class WatchedlistManager {
      */
     open func remove(_ id: String) {
         TraktManager.shared.remove(id, fromWatchedlistOfType: currentType)
-        if var array = UserDefaults.standard.object(forKey: "\(currentType.rawValue)Watchedlist") as? [String] {
-            for (index, item) in array.enumerated() {
-                if item == id {
-                    array.remove(at: index)
-                }
-            }
+        if var array = UserDefaults.standard.object(forKey: "\(currentType.rawValue)Watchedlist") as? [String],
+            let index = array.index(of: id) {
+            array.remove(at: index)
             UserDefaults.standard.set(array, forKey: "\(currentType.rawValue)Watchedlist")
         }
     }
+    
     /**
      Checks if movie or episode is in the watchedlist.
      
@@ -67,6 +64,7 @@ open class WatchedlistManager {
         }
         return false
     }
+    
     /**
      Gets watchedlist locally first and then from Trakt.
      
@@ -82,15 +80,37 @@ open class WatchedlistManager {
             completion()
         }
     }
+    
     /**
-     Retrieves all movies and episodes watched progress.
+     Stores movie progress and syncs with Trakt if available.
+     
+     - Parameter progress:      The progress of the playing video. Possible values range from 0...1.
+     - Parameter forId:         The imdbId for movies and tvdbId for episodes of the media that is playing.
+     - Parameter withStatus:    The status of the item.
      */
-    open func getWatchedProgress() {
+    open func setCurrentProgress(_ progress: Float, forId id: String, withStatus status: Trakt.WatchedStatus) {
+        TraktManager.shared.scrobble(id, progress: progress, type: currentType, status: status)
+        var dict = UserDefaults.standard.object(forKey: "\(currentType.rawValue)VideoProgress") as? [String: Float] ?? [String: Float]()
+        dict[id] = progress
+        progress >= 0.8 ? add(id) : remove(id)
+        UserDefaults.standard.set(dict, forKey: "\(currentType.rawValue)VideoProgress")
+    }
+    
+    /**
+     Retrieves latest progress from Trakt and updates local storage. 
+     
+     - Important: Local watchedlist may be more up-to-date than Trakt version but local version will be replaced with Trakt version regardless.
+     
+     - Parameter completion: Optional completion handler called when progress has been retrieved. May never be called if user hasn't authenticated with Trakt.
+     */
+    open func syncTraktProgress(completion: (() -> Void)? = nil) {
         TraktManager.shared.getPlaybackProgress(forMediaOfType: currentType) { [unowned self] (dict, error) in
             guard error == nil else {return}
             UserDefaults.standard.set(dict, forKey: "\(self.currentType.rawValue)VideoProgress")
+            completion?()
         }
     }
+    
     /**
      Gets watched progress for movie or epsiode.
      
