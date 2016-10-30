@@ -70,14 +70,14 @@ open class WatchedlistManager {
      
      - Returns: Completion block called twice; first returns locally stored watchedlist (may be out of date), second time returns the updated watchedlist from Trakt if available.
      */
-    open func getWatched(_ completion:@escaping () -> Void) {
+    open func getWatched(_ completion: (() -> Void)? = nil) {
         var array = UserDefaults.standard.object(forKey: "\(currentType.rawValue)Watchedlist") as? [String] ?? [String]()
-        completion()
+        completion?()
         TraktManager.shared.getWatched(forMediaOfType: currentType) { [unowned self] (watchedIds, error) in
             guard error == nil else {return}
             array = watchedIds
             UserDefaults.standard.set(array, forKey: "\(self.currentType.rawValue)Watchedlist")
-            completion()
+            completion?()
         }
     }
     
