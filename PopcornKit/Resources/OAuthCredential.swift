@@ -1,6 +1,8 @@
 
 
 import Alamofire
+import Foundation
+import Locksmith
 
 enum OAuthGrantType: String {
     case Code = "authorization_code"
@@ -16,13 +18,8 @@ enum OAuthGrantType: String {
  */
 class OAuthCredential: NSObject, NSCoding {
     
-    class func keychainQueryDictionary(withIdentifier identifier: String) -> [String: Any] {
-        return [
-            kSecClass as String       : kSecClassGenericPassword,
-            kSecAttrService as String : "OAuthCredentialService",
-            kSecAttrAccount as String : identifier
-        ]
-    }
+    /// Service name for storing the credential.
+    private static let service = "OAuthCredentialService"
     
     override var description: String {
         get {
@@ -226,24 +223,8 @@ class OAuthCredential: NSObject, NSCoding {
     @discardableResult func store(
         withIdentifier identifier: String,
         accessibility: AnyObject = kSecAttrAccessibleWhenUnlocked
-        ) -> Bool {
-        var queryDictionary = OAuthCredential.keychainQueryDictionary(withIdentifier: identifier)
-        
-        var updateDictionary = [String: Any]()
-        
-        updateDictionary[kSecValueData as String] = NSKeyedArchiver.archivedData(withRootObject: self)
-        updateDictionary[kSecAttrAccessible as String] = accessibility
-        
-        let status: OSStatus
-        
-        if OAuthCredential(identifier: identifier) != nil {
-            status = SecItemUpdate(queryDictionary as CFDictionary, updateDictionary as CFDictionary);
-        } else {
-            queryDictionary += updateDictionary
-            status = SecItemAdd(queryDictionary as CFDictionary, nil)
-        }
-        
-        return (status == errSecSuccess)
+        ) throws {
+        return try Locksmith.updateData(data: ["credential": NSKeyedArchiver.archivedData(withRootObject: self)], forUserAccount: identifier, inService: OAuthCredential.service)
     }
     
     /**
@@ -254,16 +235,8 @@ class OAuthCredential: NSObject, NSCoding {
      - Returns: The OAuthCredential if it existed, `nil` otherwise.
      */
     init?(identifier: String) {
-        var queryDictionary = OAuthCredential.keychainQueryDictionary(withIdentifier: identifier)
-        queryDictionary[kSecReturnData as String] = kCFBooleanTrue
-        queryDictionary[kSecMatchLimit as String] = kSecMatchLimitOne
         
-        var result: AnyObject?
-        let status: OSStatus = withUnsafeMutablePointer(to: &result) {SecItemCopyMatching(queryDictionary as CFDictionary, UnsafeMutablePointer($0)) }
-        
-        if status != errSecSuccess { return nil }
-        
-        guard let credential = NSKeyedUnarchiver.unarchiveObject(with: result as! Data) as? OAuthCredential else {return nil}
+        guard let result = Locksmith.loadDataForUserAccount(userAccount: identifier, inService: OAuthCredential.service)?["credential"] as? Data, let credential = NSKeyedUnarchiver.unarchiveObject(with: result) as? OAuthCredential else { return nil }
         
         self.accessToken = credential.accessToken
         self.expiration = credential.expiration
@@ -279,12 +252,8 @@ class OAuthCredential: NSObject, NSCoding {
      
      - Returns: A boolean value indicating the sucess of the operation.
      */
-    class func delete(withIdentifier identifier: String) -> Bool {
-        let queryDictionary = keychainQueryDictionary(withIdentifier: identifier)
-        
-        let status = SecItemDelete(queryDictionary as CFDictionary)
-        
-        return (status == errSecSuccess)
+    class func delete(withIdentifier identifier: String) throws {
+        return try Locksmith.deleteDataForUserAccount(userAccount: identifier, inService: service)
     }
     
     // MARK: - NSCoding

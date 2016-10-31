@@ -21,5 +21,6 @@ Pod::Spec.new do |s|
   s.dependency 'ObjectMapper'
   s.dependency 'AlamofireXMLRPC'
   s.dependency 'SwiftyJSON'
+  s.dependency 'Locksmith'
   s.ios.dependency 'SRT2VTT'
 end

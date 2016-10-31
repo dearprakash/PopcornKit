@@ -8,6 +8,7 @@ def pods
  pod 'ObjectMapper'
  pod 'AlamofireXMLRPC'
  pod 'SwiftyJSON'
+ pod 'Locksmith'
 end
 
 target 'PopcornKit tvOS' do

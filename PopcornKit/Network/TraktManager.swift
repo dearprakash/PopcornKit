@@ -414,8 +414,8 @@ extension TraktManager {
      
      - Returns: Boolean value indicating the sucess of the operation.
      */
-    @discardableResult public func logout() -> Bool {
-        return OAuthCredential.delete(withIdentifier: "trakt")
+    @discardableResult public func logout() throws {
+        return try OAuthCredential.delete(withIdentifier: "trakt")
     }
     
     /**
@@ -457,17 +457,13 @@ extension TraktManager {
         
         DispatchQueue.global(qos: .default).async {
             do {
-                let credential = try OAuthCredential(Trakt.base + Trakt.auth + Trakt.token,
+                try OAuthCredential(Trakt.base + Trakt.auth + Trakt.token,
                                                            code: code,
                                                            redirectURI: "PopcornTime://trakt",
                                                            clientID: Trakt.apiKey,
                                                            clientSecret: Trakt.apiSecret,
-                                                           useBasicAuthentication: false)
-                if credential.store(withIdentifier: "trakt") {
-                    self.delegate?.authenticationDidSucceed?()
-                } else {
-                    throw NSError(domain: "com.popcorntimetv.popcorntorrent.error", code: -1, userInfo: [NSLocalizedDescriptionKey: "Failed to store credentials."])
-                }
+                                                           useBasicAuthentication: false).store(withIdentifier: "trakt")
+                self.delegate?.authenticationDidSucceed?()
             } catch let error as NSError {
                 self.delegate?.authenticationDidFail?(withError: error)
             }

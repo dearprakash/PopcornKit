@@ -51,12 +51,8 @@ public class TraktAuthenticationViewController: UIViewController {
         } else if let deviceCode = deviceCode {
             DispatchQueue.global(qos: .default).async {
                 do {
-                    let credential = try OAuthCredential(Trakt.base + Trakt.auth + Trakt.device + Trakt.token, parameters: ["code": deviceCode], clientID: Trakt.apiKey, clientSecret: Trakt.apiSecret, useBasicAuthentication: false)
-                    if credential.store(withIdentifier: "trakt") {
-                        TraktManager.shared.delegate?.authenticationDidSucceed?()
-                    } else {
-                        throw NSError(domain: "com.popcorntimetv.popcorntorrent.error", code: -1, userInfo: [NSLocalizedDescriptionKey: "Failed to store credentials."])
-                    }
+                    try OAuthCredential(Trakt.base + Trakt.auth + Trakt.device + Trakt.token, parameters: ["code": deviceCode], clientID: Trakt.apiKey, clientSecret: Trakt.apiSecret, useBasicAuthentication: false).store(withIdentifier: "trakt")
+                    TraktManager.shared.delegate?.authenticationDidSucceed?()
                 } catch { }
             }
         }
