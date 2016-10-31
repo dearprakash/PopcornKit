@@ -373,6 +373,16 @@ open class TraktManager: NetworkManager {
             completion(medias, nil)
         }
     }
+    
+    /// Downloads users latest watchlist and watchedlist from Trakt.
+    open func syncUserData() {
+        WatchedlistManager.movie.syncTraktProgress()
+        WatchedlistManager.movie.getWatched()
+        WatchlistManager<Movie>.movie.getWatchlist()
+        WatchedlistManager.episode.syncTraktProgress()
+        WatchedlistManager.episode.getWatched()
+        WatchlistManager<Episode>.episode.getWatchlist()
+    }
 }
 
 /// When mapping to movies or shows from Trakt, the JSON is formatted differently to the Popcorn API. This struct is used to distinguish from which API the Media is being mapped from.

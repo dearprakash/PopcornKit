@@ -218,7 +218,7 @@ class OAuthCredential: NSObject, NSCoding {
      - Parameter identifier:            The service identifier associated with the specified token.
      - Parameter securityAccessibility: The Keychain security accessibility to store the credential with default Keychain Accessibilty of kSecAttrAccessibleWhenUnlocked.
      
-     - Returns: A boolean value indicating the success of the operation.
+     - Throws: Error if storing credential fails.
      */
     @discardableResult func store(
         withIdentifier identifier: String,
@@ -250,7 +250,7 @@ class OAuthCredential: NSObject, NSCoding {
      
      - Parameter identifier: The service identifier associated with the specified credential.
      
-     - Returns: A boolean value indicating the sucess of the operation.
+      - Throws: Error if deleting the credential fails.
      */
     class func delete(withIdentifier identifier: String) throws {
         return try Locksmith.deleteDataForUserAccount(userAccount: identifier, inService: service)
