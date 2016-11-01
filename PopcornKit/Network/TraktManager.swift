@@ -407,6 +407,9 @@ open class TraktManager: NetworkManager {
         WatchedlistManager.episode.syncTraktProgress()
         WatchedlistManager.episode.getWatched()
         WatchlistManager<Episode>.episode.getWatchlist()
+        WatchedlistManager.show.syncTraktProgress()
+        WatchedlistManager.show.getWatched()
+        WatchlistManager<Show>.show.getWatchlist()
     }
     
     /**
