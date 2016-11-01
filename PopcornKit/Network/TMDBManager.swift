@@ -4,7 +4,7 @@ import Foundation
 import Alamofire
 import SwiftyJSON
 
-class TMDBManager: NetworkManager {
+open class TMDBManager: NetworkManager {
     
     /// Creates new instance of TMDBManager class
     open static let shared = TMDBManager()
