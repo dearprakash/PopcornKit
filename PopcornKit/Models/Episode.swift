@@ -38,14 +38,14 @@ public struct Episode: Media, Equatable {
     public var show: Show!
     
     
-    /// If fanart image is available, it is returned with size 853*480. Will be `nil` until an image is obtained by calling `getEpisodeMetadata:showId:episodeNumber:seasonNumber:completion:` on `TraktManager`.
+    /// If fanart image is available, it is returned with size 300*169. Will be `nil` until an image is obtained by calling `getEpisodeMetadata:showId:episodeNumber:seasonNumber:completion:` on `TraktManager`.
     public var smallBackgroundImage: String? {
-        return largeBackgroundImage?.replacingOccurrences(of: "original", with: "thumb")
+        return largeBackgroundImage?.replacingOccurrences(of: "w1920", with: "w300")
     }
     
-    /// If fanart image is available, it is returned with size 1280*720. Will be `nil` until an image is obtained by calling `getEpisodeMetadata:showId:episodeNumber:seasonNumber:completion:` on `TraktManager`.
+    /// If fanart image is available, it is returned with size 1000*536. Will be `nil` until an image is obtained by calling `getEpisodeMetadata:showId:episodeNumber:seasonNumber:completion:` on `TraktManager`.
     public var mediumBackgroundImage: String? {
-        return largeBackgroundImage?.replacingOccurrences(of: "original", with: "medium")
+        return largeBackgroundImage?.replacingOccurrences(of: "w1920", with: "w1000")
     }
     
     /// If fanart image is available, it is returned with size 1920*1080. Will be `nil` until an image is obtained by calling `getEpisodeMetadata:showId:episodeNumber:seasonNumber:completion:` on `TraktManager`.

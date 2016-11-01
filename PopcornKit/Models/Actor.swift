@@ -20,9 +20,13 @@ public struct Actor: Person, Equatable {
     /// If headshot image is available, it is returned with size 1000*1500.
     public var largeImage: String?
     /// If headshot image is available, it is returned with size 600*900.
-    public var mediumImage: String?
+    public var mediumImage: String? {
+        return largeImage?.replacingOccurrences(of: "w1920", with: "w600")
+    }
     /// If headshot image is available, it is returned with size 300*450.
-    public var smallImage: String?
+    public var smallImage: String? {
+        return largeImage?.replacingOccurrences(of: "w1920", with: "w300")
+    }
     
 
     public init?(map: Map) {
@@ -34,8 +38,6 @@ public struct Actor: Person, Equatable {
         self.name = try map.value("person.name")
         self.characterName = try map.value("character")
         self.largeImage = try? map.value("person.images.headshot.full")
-        self.mediumImage = try? map.value("person.images.headshot.medium")
-        self.smallImage = try? map.value("person.images.headshot.thumb")
         self.imdbId = try map.value("person.ids.imdb")
         self.tmdbId = try map.value("person.ids.tmdb")
     }
@@ -50,8 +52,6 @@ public struct Actor: Person, Equatable {
             name >>> map["person.name"]
             characterName >>> map["character"]
             largeImage >>> map["person.images.headshot.full"]
-            mediumImage >>> map["person.images.headshot.medium"]
-            smallImage >>> map["person.images.headshot.thumb"]
             imdbId >>> map["person.ids.imdb"]
             tmdbId >>> map["person.ids.tmdb"]
         }

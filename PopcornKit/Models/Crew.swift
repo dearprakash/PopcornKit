@@ -22,9 +22,13 @@ public struct Crew: Person, Equatable {
     /// If headshot image is available, it is returned with size 1000*1500.
     public var largeImage: String?
     /// If headshot image is available, it is returned with size 600*900.
-    public var mediumImage: String?
+    public var mediumImage: String? {
+        return largeImage?.replacingOccurrences(of: "w1920", with: "w600")
+    }
     /// If headshot image is available, it is returned with size 300*450.
-    public var smallImage: String?
+    public var smallImage: String? {
+        return largeImage?.replacingOccurrences(of: "w1920", with: "w300")
+    }
     
     
     public init?(map: Map) {
@@ -36,8 +40,6 @@ public struct Crew: Person, Equatable {
         self.name = try map.value("person.name")
         self.job = try map.value("job")
         self.largeImage = try? map.value("person.images.headshot.full")
-        self.mediumImage = try? map.value("person.images.headshot.medium")
-        self.smallImage = try? map.value("person.images.headshot.thumb")
         self.imdbId = try map.value("person.ids.imdb")
         self.tmdbId = try map.value("person.ids.tmdb")
         self.roleType = (try? map.value("roleType")) ?? .unknown // Will only not be `nil` if object is mapped from JSON array, otherwise this is set in `TraktManager` object.
@@ -53,8 +55,6 @@ public struct Crew: Person, Equatable {
             roleType >>> map["roleType"]
             imdbId >>> map["person.ids.imdb"]
             tmdbId >>> map["person.ids.tmdb"]
-            smallImage >>> map["person.images.headshot.thumb"]
-            mediumImage >>> map["person.images.headshot.medium"]
             largeImage >>> map["person.images.headshot.full"]
             job >>> map["job"]
             name >>> map["person.name"]

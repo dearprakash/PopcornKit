@@ -66,17 +66,17 @@ public struct Show: Media, Equatable {
     /// If fanart image is available, it is returned with size 1920*1080.
     public var largeBackgroundImage: String?
     
-    /// If poster image is available, it is returned with size 300*441.
+    /// If poster image is available, it is returned with size 450*300.
     public var smallCoverImage: String? {
-        return largeCoverImage?.replacingOccurrences(of: "original", with: "thumb")
+        return largeCoverImage?.replacingOccurrences(of: "w1920", with: "w300")
     }
     
-    /// If poster image is available, it is returned with size 600*882.
+    /// If poster image is available, it is returned with size 1500*1000.
     public var mediumCoverImage: String? {
-        return largeCoverImage?.replacingOccurrences(of: "original", with: "medium")
+        return largeCoverImage?.replacingOccurrences(of: "w1920", with: "w1000")
     }
     
-    /// If poster image is available, it is returned with size 680*1000
+    /// If poster image is available, it is returned with size 2800*1920
     public var largeCoverImage: String?
     
     
