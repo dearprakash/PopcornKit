@@ -1,7 +1,7 @@
 
 
 extension String {
-    func sliceFrom(_ start: String, to: String) -> String? {
+    func slice(from start: String, to: String) -> String? {
         return (range(of: start)?.upperBound).flatMap { sInd in
             let eInd = range(of: to, range: sInd..<endIndex)
             if eInd != nil {

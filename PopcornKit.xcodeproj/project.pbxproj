@@ -61,6 +61,8 @@
 		4D6901481D8736F600F26AD9 /* NSData+GZIP.m in Sources */ = {isa = PBXBuildFile; fileRef = 4D6901461D8736F600F26AD9 /* NSData+GZIP.m */; };
 		4D69014A1D873A3200F26AD9 /* NSData+GZIP.h in Headers */ = {isa = PBXBuildFile; fileRef = 4D6901431D8736B200F26AD9 /* NSData+GZIP.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4D69014B1D873A3300F26AD9 /* NSData+GZIP.h in Headers */ = {isa = PBXBuildFile; fileRef = 4D6901431D8736B200F26AD9 /* NSData+GZIP.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4DC04BA61DC7E1D500FB43CC /* TMDBManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4DC04BA51DC7E1D500FB43CC /* TMDBManager.swift */; };
+		4DC04BA71DC7E1D500FB43CC /* TMDBManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4DC04BA51DC7E1D500FB43CC /* TMDBManager.swift */; };
 		4DEA8A641D90552500224342 /* TraktAuthenticationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4DEA8A611D90552500224342 /* TraktAuthenticationViewController.swift */; };
 		4DEA8A651D90552500224342 /* TraktAuthenticationViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4DEA8A621D90552500224342 /* TraktAuthenticationViewController.xib */; };
 		4DEA8A661D90552500224342 /* TraktQRCode.png in Resources */ = {isa = PBXBuildFile; fileRef = 4DEA8A631D90552500224342 /* TraktQRCode.png */; };
@@ -113,6 +115,7 @@
 		4D6901461D8736F600F26AD9 /* NSData+GZIP.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "NSData+GZIP.m"; path = "Resources/NSData+GZIP.m"; sourceTree = "<group>"; };
 		4D69014C1D88671700F26AD9 /* PopcornKit.modulemap */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = "sourcecode.module-map"; name = PopcornKit.modulemap; path = PopcornKit/Sources/PopcornKit.modulemap; sourceTree = SOURCE_ROOT; };
 		4D6E04704B734FF216428D5A /* Pods_PopcornKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_PopcornKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		4DC04BA51DC7E1D500FB43CC /* TMDBManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = TMDBManager.swift; path = Network/TMDBManager.swift; sourceTree = "<group>"; };
 		4DE335481D85795000B6AB6D /* TraktManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; name = TraktManager.swift; path = Network/TraktManager.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		4DE3354A1D857A1400B6AB6D /* OAuthCredential.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = OAuthCredential.swift; path = Resources/OAuthCredential.swift; sourceTree = "<group>"; };
 		4DE3354E1D85A9EA00B6AB6D /* SubtitlesManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = SubtitlesManager.swift; path = Network/SubtitlesManager.swift; sourceTree = "<group>"; };
@@ -277,6 +280,7 @@
 			isa = PBXGroup;
 			children = (
 				92BD96981C961C5400B8071E /* NetworkManager.swift */,
+				4DC04BA51DC7E1D500FB43CC /* TMDBManager.swift */,
 				925F8DD21CA9E267007100EB /* UpdateManager.swift */,
 				4D208DA91D848A2200CB8EDB /* PopcornKit.swift */,
 				4D208DAB1D848F5800CB8EDB /* AnimeManager.swift */,
@@ -580,6 +584,7 @@
 				4D6901321D872E3D00F26AD9 /* SubtitlesManager.swift in Sources */,
 				4D6901361D872E3D00F26AD9 /* Movie.swift in Sources */,
 				4D1589401DC244630000B8EF /* ThemeSongManager.swift in Sources */,
+				4DC04BA61DC7E1D500FB43CC /* TMDBManager.swift in Sources */,
 				4D44824D1DA18D9C00A7FF0E /* WatchlistManager.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -608,6 +613,7 @@
 				4D6901111D872E3B00F26AD9 /* Crew.swift in Sources */,
 				4D6901031D872E3B00F26AD9 /* UpdateManager.swift in Sources */,
 				4D6901121D872E3B00F26AD9 /* Person.swift in Sources */,
+				4DC04BA71DC7E1D500FB43CC /* TMDBManager.swift in Sources */,
 				4D6901481D8736F600F26AD9 /* NSData+GZIP.m in Sources */,
 				4D69010B1D872E3B00F26AD9 /* Episode.swift in Sources */,
 				4D1589411DC244630000B8EF /* ThemeSongManager.swift in Sources */,

@@ -15,6 +15,9 @@ public struct Show: Media, Equatable {
     /// Imdb for show, arbitrary id for anime.
     public var id: String
     
+    /// TMDB id of the show. This will be `nil` unless explicitly set by calling `getTMDBId:forImdbId:completion:` on `TraktManager` or the show was loaded from Trakt.
+    public var tmdbId: Int?
+    
     /// Tvdb for show and anime. Will **sometimes** be `nil` if shows were loaded from popcorn-api and not trakt. ie. unless user selects show from relatedShows.
     public var tvdbId: String?
     
@@ -106,8 +109,6 @@ public struct Show: Media, Equatable {
             self.airDay = try? map.value("airs.day")
             self.airTime = try? map.value("airs.time")
             self.rating = try map.value("rating")
-            self.largeCoverImage = try? map.value("images.poster.full")
-            self.largeBackgroundImage = try? map.value("images.fanart.full")
         } else {
             self.id = try (try? map.value("imdb_id")) ?? map.value("_id")
             self.tvdbId = try? map.value("tvdb_id")
@@ -125,6 +126,7 @@ public struct Show: Media, Equatable {
         self.runtime = try? map.value("runtime")
         self.genres = (try? map.value("genres")) ?? [String]()
         self.episodes = (try? map.value("episodes")) ?? [Episode]()
+        self.tmdbId = try? map.value("ids.tmdb")
         
         var episodes = [Episode]()
         for var episode in self.episodes {
@@ -143,6 +145,7 @@ public struct Show: Media, Equatable {
             }
         case .toJSON:
             id >>> map["imdb_id"]
+            tmdbId >>> map["ids.tmdb"]
             tvdbId >>> map["tvdb_id"]
             slug >>> map["slug"]
             year >>> map["year"]

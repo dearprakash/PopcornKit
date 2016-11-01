@@ -14,6 +14,8 @@ public struct Actor: Person, Equatable {
     public let characterName: String
     /// Imdb id of the actor.
     public let imdbId: String
+    /// TMDB id of the person.
+    public let tmdbId: Int
     
     /// If headshot image is available, it is returned with size 1000*1500.
     public var largeImage: String?
@@ -35,7 +37,7 @@ public struct Actor: Person, Equatable {
         self.mediumImage = try? map.value("person.images.headshot.medium")
         self.smallImage = try? map.value("person.images.headshot.thumb")
         self.imdbId = try map.value("person.ids.imdb")
-
+        self.tmdbId = try map.value("person.ids.tmdb")
     }
 
     public mutating func mapping(map: Map) {
@@ -51,6 +53,7 @@ public struct Actor: Person, Equatable {
             mediumImage >>> map["person.images.headshot.medium"]
             smallImage >>> map["person.images.headshot.thumb"]
             imdbId >>> map["person.ids.imdb"]
+            tmdbId >>> map["person.ids.tmdb"]
         }
     }
 }

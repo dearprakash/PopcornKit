@@ -22,11 +22,10 @@ public struct Trakt {
     static let watched = "/watched"
     static let watchlist = "/watchlist"
     static let scrobble = "/scrobble"
-    public struct Parameters {
-        static let extendedImages = ["extended" : "images"]
-        static let extendedFull = ["extended" : "full"]
-        static let extendedAll = ["extended" : "full,images"]
-    }
+    static let imdb = "/imdb"
+    static let search = "/search"
+    
+    static let extended = ["extended": "full"]
     public struct Headers {
         static let Default = [
             "Content-Type": "application/json",
@@ -71,6 +70,23 @@ public struct Popcorn {
     static let movie = "/movie"
     static let anime = "/anime"
     static let show = "/show"
+}
+
+public struct TMDB {
+    static let apiKey = "fa664b70ac6e307a1f859198f1148ce9"
+    static let base = "https://api.themoviedb.org/3/"
+    static let tv = "/tv"
+    static let person = "/person"
+    static let images = "/images"
+    static let season = "/season"
+    static let episode = "/episode"
+    
+    public enum MediaType: String {
+        case movies = "movie"
+        case shows = "tv"
+    }
+    
+    static let defaultHeaders = ["api_key": TMDB.apiKey]
 }
 
 open class NetworkManager: NSObject {

@@ -76,7 +76,7 @@ public struct Torrent: Mappable, Equatable, Comparable {
     
     private init(_ map: Map) throws {
         self.url = try map.value("url")
-        self.hash = url.contains("https://") ? nil : url.sliceFrom("magnet:?xt=urn:btih:", to: url.contains("&dn=") ? "&dn=" : "")
+        self.hash = url.contains("https://") ? nil : url.slice(from: "magnet:?xt=urn:btih:", to: url.contains("&dn=") ? "&dn=" : "")
         self.seeds = (try? (try? map.value("seeds")) ?? map.value(("seed"))) ?? 0
         self.peers = (try? (try? map.value("peers")) ?? map.value(("peer"))) ?? 0
         self.size = try? map.value("filesize")

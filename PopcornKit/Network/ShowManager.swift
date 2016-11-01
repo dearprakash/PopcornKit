@@ -1,6 +1,7 @@
 
 
 import ObjectMapper
+import SwiftyJSON
 
 open class ShowManager: NetworkManager {
     
@@ -94,22 +95,39 @@ open class ShowManager: NetworkManager {
             params["keywords"] = searchTerm
         }
         self.manager.request(Popcorn.base + Popcorn.shows + "/\(page)", method: .get, parameters: params).validate().responseJSON { response in
-            guard let value = response.result.value else {completion(nil, response.result.error as NSError?); return}
-            completion(Mapper<Show>().mapArray(JSONObject: value), nil)
+            guard let value = response.result.value else { completion(nil, response.result.error as NSError?); return }
+            let group = DispatchGroup()
+            var shows = [Show]()
+            for (_, item) in JSON(value) {
+                guard var show = Mapper<Show>().map(JSONObject: item.dictionaryObject) else { continue }
+                group.enter()
+                TMDBManager.shared.getPoster(forMediaOfType: .shows, withImdbId: show.id, orTMDBId: show.tmdbId, completion: { (tmdb, image, error) in
+                    if let tmdb = tmdb { show.tmdbId = tmdb }
+                    if let image = image { show.largeCoverImage = image }
+                    group.leave()
+                })
+                shows.append(show)
+            }
+            group.notify(queue: .main, execute: { completion(shows, nil) })
         }
     }
     
     /**
      Get more show information.
      
-     - Parameter imbdId:        The imbd identification code of the show.
+     - Parameter imdbId:        The imdb identification code of the show.
+     - Parameter tmdbId:        The tmdb identification code of the show.
      
      - Parameter completion:    Completion handler for the request. Returns show upon success, error upon failure.
      */
-    open func getInfo(_ imdbId: String, completion: @escaping (_ show: Show?, _ error: NSError?) -> Void) {
+    open func getInfo(_ imdbId: String, tmdbId: Int?, completion: @escaping (_ show: Show?, _ error: NSError?) -> Void) {
         self.manager.request(Popcorn.base + Popcorn.show + "/\(imdbId)", method: .get).validate().responseJSON { response in
-            guard let value = response.result.value else {completion(nil, response.result.error as NSError?); return}
-            completion(Mapper<Show>().map(JSONObject: value), nil)
+            guard let value = response.result.value, var show = Mapper<Show>().map(JSONObject: value) else {completion(nil, response.result.error as NSError?); return }
+            TMDBManager.shared.getPoster(forMediaOfType: .shows, withImdbId: imdbId, orTMDBId: tmdbId, completion: { (tmdb, image, error) in
+                if let tmdb = tmdb { show.tmdbId = tmdb }
+                if let image = image { show.largeCoverImage = image }
+                completion(show, nil)
+            })
         }
     }
 }

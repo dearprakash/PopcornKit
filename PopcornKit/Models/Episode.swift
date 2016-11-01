@@ -22,6 +22,9 @@ public struct Episode: Media, Equatable {
     /// The tvdb id of the episode.
     public let id: String
     
+    /// TMDB id of the episode. This will be `nil` unless explicitly set by calling `getTMDBId:forImdbId:completion:` on `TraktManager` or the episode was loaded from Trakt.
+    public var tmdbId: Int?
+    
     /// The slug for episode. May be wrong as it is being computed from title instead of being pulled from apis.
     public let slug: String
     
@@ -70,7 +73,6 @@ public struct Episode: Media, Equatable {
         if map.context is TraktContext {
             self.id = try map.value("ids.tvdb", using: StringTransform())
             self.episode = try map.value("number")
-            self.largeBackgroundImage = try? map.value("images.screenshot.full")
         } else {
             self.episode = try map.value("episode")
             self.id = try map.value("tvdb_id", using: StringTransform()).replacingOccurrences(of: "-", with: "")
@@ -84,6 +86,7 @@ public struct Episode: Media, Equatable {
             }
             torrents.sort(by: <)
         }
+        self.tmdbId = try? map.value("ids.tmdb")
         self.show = try? map.value("show") // Will only not be `nil` if object is mapped from JSON array, otherwise this is set in `Show` struct.
         self.firstAirDate =  try map.value("first_aired", using: DateTransform())
         self.summary = ((try? map.value("overview")) ?? "No summary available.").replacingOccurrences(of: "\"", with: "") // Stop issues with escaping characters in xml
@@ -91,6 +94,7 @@ public struct Episode: Media, Equatable {
         let episode = self.episode // Stop compiler complaining about passing uninitialised variables to closure.
         self.title = (try? map.value("title")) ?? "Episode \(episode)"
         self.slug = title.slugged
+        self.largeBackgroundImage = try? map.value("images.fanart")
     }
     
     public mutating func mapping(map: Map) {
@@ -101,6 +105,7 @@ public struct Episode: Media, Equatable {
             }
         case .toJSON:
             id >>> (map["tvdb_id"], StringTransform())
+            tmdbId >>> map["ids.tmdb"]
             firstAirDate >>> (map["first_aired"], DateTransform())
             summary >>> map["overview"]
             season >>> map["season"]

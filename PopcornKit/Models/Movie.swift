@@ -15,6 +15,9 @@ public struct Movie: Media, Equatable {
     /// Imdb id of the movie.
     public let id: String
     
+    /// TMDB id of the movie. If movie is loaded from Trakt, this will not be `nil`. It is otherwise scraped from the image url. If movie has no image, this will be `nil` and `getTMDBId:forImdbId:completion:` will have to be called on `TraktManager`.
+    public var tmdbId: Int?
+    
     /// The slug of the movie. May be wrong as it is being computed from title and year instead of being pulled from apis.
     public let slug: String
     
@@ -38,7 +41,7 @@ public struct Movie: Media, Equatable {
     
     /// The youtube code (part of the url after `?v=`) of the trailer. Will be `nil` if trailer url is `nil`.
     public var trailerCode: String? {
-        return trailer?.sliceFrom("?v=", to: "")
+        return trailer?.slice(from: "?v=", to: "")
     }
     
     /// The certification type according to the Motion picture rating system.
@@ -104,11 +107,10 @@ public struct Movie: Media, Equatable {
     private init(_ map: Map) throws {
         if map.context is TraktContext {
             self.id = try map.value("ids.imdb")
+            self.tmdbId = try map.value("ids.tmdb")
             self.year = try map.value("year", using: StringTransform())
             self.rating = try map.value("rating")
             self.summary = ((try? map.value("overview")) ?? "No summary available.").replacingOccurrences(of: "\"", with: "") // Stop issues with escaping characters in xml
-            self.largeCoverImage = try? map.value("images.poster.full")
-            self.largeBackgroundImage = try? map.value("images.fanart.full")
             self.runtime = try map.value("runtime", using: StringTransform())
         } else {
             self.id = try map.value("imdb_id")
@@ -118,10 +120,15 @@ public struct Movie: Media, Equatable {
             self.largeCoverImage = try? map.value("images.poster")
             self.largeBackgroundImage = try? map.value("images.fanart")
             self.runtime = try map.value("runtime")
+            if let id = largeBackgroundImage?.slice(from: "http://assets.fanart.tv/fanart/movies/", to: "/") // Scrape tmdb id from fanart.tv image url.
+            {
+                self.tmdbId = Int(id)
+            }
+
         }
         self.title = try map.value("title")
         self.slug = title.slugged
-        self.trailer = try? map.value("trailer")
+        self.trailer = try? map.value("trailer"); trailer == "false" ? trailer = nil : ()
         self.certification = try map.value("certification")
         self.genres = (try? map.value("genres")) ?? [String]()
         if let torrents = map["torrents.en"].currentValue as? [String: [String: Any]] {

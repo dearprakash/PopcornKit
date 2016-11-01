@@ -7,6 +7,7 @@ import ObjectMapper
 public protocol Media: Mappable {
     var title: String { get }
     var id: String { get }
+    var tmdbId: Int? { get set }
     var slug: String { get }
     
     var summary: String { get }
@@ -35,12 +36,12 @@ extension Media {
     public var subtitles: [Subtitle]! { get { return nil } set {} }
     public var currentSubtitle: Subtitle? { get { return nil } set {} }
     
-    public var torrents: [Torrent]! { get { return nil } set{} }
-    public var currentTorrent: Torrent? { get { return nil } set{} }
+    public var torrents: [Torrent]! { get { return nil } set {} }
+    public var currentTorrent: Torrent? { get { return nil } set {} }
     
     public var smallCoverImage: String? { return nil }
     public var mediumCoverImage: String? { return nil }
-    public var largeCoverImage: String? { get{return nil} set{} }
+    public var largeCoverImage: String? { get{ return nil } set {} }
 }
 
 open class StringTransform: TransformType {
