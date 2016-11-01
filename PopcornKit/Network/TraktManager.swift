@@ -202,10 +202,12 @@ open class TraktManager: NetworkManager {
                     for var person in people {
                         group.enter()
                         TMDBManager.shared.getCharacterHeadshots(forPersonWithImdbId: person.imdbId, completion: { (_, image, error) in
-                            if let image = image {  person.largeImage = image  }
+                            if let image = image { person.largeImage = image }
+                            person.roleType = Role(rawValue: role) ?? .unknown
+                            crew.append(person)
                             group.leave()
                         })
-                        person.roleType = Role(rawValue: role) ?? .unknown; crew.append(person)
+                        
                     }
                 }
             }
@@ -254,9 +256,9 @@ open class TraktManager: NetworkManager {
                             group.enter()
                             TMDBManager.shared.getPoster(forMediaOfType: media is Movie ? .movies : .shows, withImdbId: media.id, orTMDBId: media.tmdbId, completion: { (_, image, error) in
                                 if let image = image { media.largeCoverImage = image }
+                                watchlist.append(media)
                                 group.leave()
                             })
-                            watchlist.append(media)
                             continue
                         }
                         episode.show = show
@@ -348,9 +350,9 @@ open class TraktManager: NetworkManager {
                 group.enter()
                 TMDBManager.shared.getPoster(forMediaOfType: media is Movie ? .movies : .shows, withImdbId: media.id, orTMDBId: media.tmdbId, completion: { (_, image, error) in
                     if let image = image { media.largeCoverImage = image }
+                    array.append(media)
                     group.leave()
                 })
-                array.append(media)
             }
             group.notify(queue: .main, execute: { completion(array, nil) })
         }
@@ -379,9 +381,9 @@ open class TraktManager: NetworkManager {
                     group.enter()
                     TMDBManager.shared.getPoster(forMediaOfType: media is Movie ? .movies : .shows, withImdbId: media.id, orTMDBId: media.tmdbId, completion: { (_, image, error) in
                         if let image = image { media.largeCoverImage = image }
+                        medias.append(media)
                         group.leave()
                     })
-                    medias.append(media)
                 }
             }
             for (_, item) in responseObject["cast"] {
@@ -389,9 +391,9 @@ open class TraktManager: NetworkManager {
                 group.enter()
                 TMDBManager.shared.getPoster(forMediaOfType: media is Movie ? .movies : .shows, withImdbId: media.id, orTMDBId: media.tmdbId, completion: { (_, image, error) in
                     if let image = image { media.largeCoverImage = image }
+                    medias.append(media)
                     group.leave()
                 })
-                medias.append(media)
             }
             group.notify(queue: .main, execute: { completion(medias, nil) })
         }

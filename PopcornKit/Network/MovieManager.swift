@@ -108,9 +108,9 @@ open class MovieManager: NetworkManager {
                 TMDBManager.shared.getPoster(forMediaOfType: .movies, withImdbId: movie.id, orTMDBId: movie.tmdbId, completion: { (tmdb, image, error) in
                     if let tmdb = tmdb { movie.tmdbId = tmdb }
                     if let image = image { movie.largeCoverImage = image }
+                    movies.append(movie)
                     group.leave()
                 })
-                movies.append(movie)
             }
             group.notify(queue: .main, execute: { completion(movies, nil) })
         }

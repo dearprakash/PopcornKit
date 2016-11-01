@@ -104,9 +104,9 @@ open class ShowManager: NetworkManager {
                 TMDBManager.shared.getPoster(forMediaOfType: .shows, withImdbId: show.id, orTMDBId: show.tmdbId, completion: { (tmdb, image, error) in
                     if let tmdb = tmdb { show.tmdbId = tmdb }
                     if let image = image { show.largeCoverImage = image }
+                    shows.append(show)
                     group.leave()
                 })
-                shows.append(show)
             }
             group.notify(queue: .main, execute: { completion(shows, nil) })
         }
