@@ -35,7 +35,7 @@ open class TMDBManager: NetworkManager {
             
             var image: String?
             if let poster = responseDict["posters"].first?.1["file_path"].string {
-                image = "https://image.tmdb.org/t/p/w1920/" + poster
+                image = "https://image.tmdb.org/t/p/w1920" + poster
             }
             completion(id, image, nil)
         }
@@ -67,7 +67,7 @@ open class TMDBManager: NetworkManager {
             
             var image: String?
             if let poster = responseDict["posters"].first?.1["file_path"].string {
-                image = "https://image.tmdb.org/t/p/w500/" + poster
+                image = "https://image.tmdb.org/t/p/w500" + poster
             }
             completion(id, image, nil)
         }
@@ -100,7 +100,7 @@ open class TMDBManager: NetworkManager {
             
             var image: String?
             if let screenshot = responseDict["stills"].first?.1["file_path"].string {
-                image = "https://image.tmdb.org/t/p/w1920/" + screenshot
+                image = "https://image.tmdb.org/t/p/w1920" + screenshot
             }
             completion(id, image, nil)
         }
@@ -131,7 +131,7 @@ open class TMDBManager: NetworkManager {
             
             var image: String?
             if let headshot = responseDict["profiles"].first?.1["file_path"].string {
-                image = "https://image.tmdb.org/t/p/w1000/" + headshot
+                image = "https://image.tmdb.org/t/p/w1000" + headshot
             }
             completion(id, image, nil)
         }
