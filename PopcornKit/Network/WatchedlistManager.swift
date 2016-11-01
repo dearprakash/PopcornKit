@@ -12,6 +12,9 @@ open class WatchedlistManager {
     /// Creates new instance of WatchedlistManager class with type of Episodes.
     open static let episode = WatchedlistManager(type: .episodes)
     
+    /// Creates new instance of WatchedlistManager class with type of Shows.
+    open static let show = WatchedlistManager(type: .shows)
+    
     private init(type: Trakt.MediaType) {
         currentType = type
     }
