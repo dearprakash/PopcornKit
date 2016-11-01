@@ -68,15 +68,15 @@ public struct Show: Media, Equatable {
     
     /// If poster image is available, it is returned with size 450*300.
     public var smallCoverImage: String? {
-        return largeCoverImage?.replacingOccurrences(of: "w1920", with: "w300")
+        return largeCoverImage?.replacingOccurrences(of: "w1000", with: "w300")
     }
     
-    /// If poster image is available, it is returned with size 1500*1000.
+    /// If poster image is available, it is returned with size 975*650.
     public var mediumCoverImage: String? {
-        return largeCoverImage?.replacingOccurrences(of: "w1920", with: "w1000")
+        return largeCoverImage?.replacingOccurrences(of: "w1000", with: "w650")
     }
     
-    /// If poster image is available, it is returned with size 2800*1920
+    /// If poster image is available, it is returned with size 1500*1000
     public var largeCoverImage: String?
     
     
