@@ -194,21 +194,28 @@ open class TraktManager: NetworkManager {
         self.manager.request(Trakt.base + "/\(type.rawValue)/\(id)" + Trakt.people, headers: Trakt.Headers.Default).validate().responseJSON { response in
             guard let value = response.result.value else { completion([Actor](), [Crew](), response.result.error as NSError?); return }
             let responseObject = JSON(value)
-            let actors = Mapper<Actor>().mapArray(JSONObject: responseObject["cast"].arrayObject) ?? [Actor]()
+            var actors = [Actor]()
             var crew = [Crew]()
             let group = DispatchGroup()
+            for (_, actor) in responseObject["cast"] {
+                guard var actor = Mapper<Actor>().map(JSONObject: actor.dictionaryObject) else { continue }
+                group.enter()
+                TMDBManager.shared.getCharacterHeadshots(forPersonWithImdbId: actor.imdbId, orTMDBId: actor.tmdbId, completion: { (_, image, error) in
+                    if let image = image { actor.largeImage = image }
+                    actors.append(actor)
+                    group.leave()
+                })
+            }
             for (role, people) in responseObject["crew"] {
-                if let people = Mapper<Crew>().mapArray(JSONObject: people.arrayObject) {
-                    for var person in people {
-                        group.enter()
-                        TMDBManager.shared.getCharacterHeadshots(forPersonWithImdbId: person.imdbId, completion: { (_, image, error) in
-                            if let image = image { person.largeImage = image }
-                            person.roleType = Role(rawValue: role) ?? .unknown
-                            crew.append(person)
-                            group.leave()
-                        })
-                        
-                    }
+                guard let people = Mapper<Crew>().mapArray(JSONObject: people.arrayObject) else { continue }
+                for var person in people {
+                    group.enter()
+                    TMDBManager.shared.getCharacterHeadshots(forPersonWithImdbId: person.imdbId, orTMDBId: person.tmdbId, completion: { (_, image, error) in
+                        if let image = image { person.largeImage = image }
+                        person.roleType = Role(rawValue: role) ?? .unknown
+                        crew.append(person)
+                        group.leave()
+                    })
                 }
             }
             group.notify(queue: .main, execute: { completion(actors, crew, nil) })
@@ -419,7 +426,7 @@ open class TraktManager: NetworkManager {
      - Parameter completion:    Completion handler containing optional tmdb id and an optional error.
      */
     open func getTMDBId(forImdbId id: String, completion: @escaping (Int?, NSError?) -> Void) {
-        self.manager.request(Trakt.base + Trakt.search + Trakt.imdb + "/\(id)").validate().responseJSON { (response) in
+        self.manager.request(Trakt.base + Trakt.search + Trakt.imdb + "/\(id)", headers: Trakt.Headers.Default).validate().responseJSON { (response) in
             guard let value = response.result.value else { completion(nil, response.result.error as NSError?); return }
             let responseObject = JSON(value).arrayValue.first
             
