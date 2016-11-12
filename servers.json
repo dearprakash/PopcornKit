@@ -1,8 +1,8 @@
 {
     "yts": [
+        "https://movies.api-fetch.website/api/v2/",
         "http://yts.ph/api/v2/",
-        "http://yify.is/api/v2/",
-        "https://movies.api-fetch.website/api/v2/"
+        "http://yify.is/api/v2/"
     ],
     "eztv": [
         "https://api-fetch.website/tv/",
