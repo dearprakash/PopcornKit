@@ -19,5 +19,6 @@ end
 target 'PopcornKit iOS' do
     platform :ios, '9.0'
     pods
+    pod 'google-cast-sdk', '~> 3.2'
     pod 'SRT2VTT', '~> 1.0.1'
 end
