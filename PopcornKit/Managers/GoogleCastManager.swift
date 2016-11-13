@@ -1,4 +1,5 @@
 
+#if os(iOS)
 
 import Foundation
 import GoogleCast
@@ -127,3 +128,5 @@ public func == (left: GCKDevice, right: GCKDevice) -> Bool {
 public func != (left: GCKDevice, right: GCKDevice) -> Bool {
     return left.deviceID != right.deviceID && left.uniqueID != right.uniqueID
 }
+
+#endif

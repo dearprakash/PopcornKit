@@ -1,4 +1,5 @@
 
+#if os(iOS)
 
 import Foundation
 import MediaPlayer
@@ -128,3 +129,5 @@ open class AirPlayManager: NSObject {
 }
 
 extension NSObject: MPAVRoutingControllerProtocol, MPAVRouteProtocol, MPAudioDeviceControllerProtocol {}
+
+#endif
