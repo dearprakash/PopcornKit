@@ -100,19 +100,7 @@ open class MovieManager: NetworkManager {
                 completion(nil, response.result.error as NSError?)
                 return
             }
-            let group = DispatchGroup()
-            var movies = [Movie]()
-            for (_, item) in JSON(value) {
-                guard var movie = Mapper<Movie>().map(JSONObject: item.dictionaryObject) else { continue }
-                group.enter()
-                TMDBManager.shared.getPoster(forMediaOfType: .movies, withImdbId: movie.id, orTMDBId: movie.tmdbId, completion: { (tmdb, image, error) in
-                    if let tmdb = tmdb { movie.tmdbId = tmdb }
-                    if let image = image { movie.largeCoverImage = image }
-                    movies.append(movie)
-                    group.leave()
-                })
-            }
-            group.notify(queue: .main, execute: { completion(movies, nil) })
+            completion(Mapper<Movie>().mapArray(JSONObject: value), nil)
         }
     }
     
@@ -120,18 +108,13 @@ open class MovieManager: NetworkManager {
      Get more movie information.
      
      - Parameter imdbId:        The imdb identification code of the movie.
-     - Parameter tmdbId:        The tmdb identification code of the movie.
      
      - Parameter completion:    Completion handler for the request. Returns movie upon success, error upon failure.
      */
-    open func getInfo(_ imdbId: String, tmdbId: Int?, completion: @escaping (_ movie: Movie?, _ error: NSError?) -> Void) {
+    open func getInfo(_ imdbId: String, completion: @escaping (_ movie: Movie?, _ error: NSError?) -> Void) {
         self.manager.request(Popcorn.base + Popcorn.movie + "/\(imdbId)").validate().responseJSON { response in
-            guard let value = response.result.value, var movie = Mapper<Movie>().map(JSONObject: value) else { completion(nil, response.result.error as NSError?); return }
-            TMDBManager.shared.getPoster(forMediaOfType: .movies, withImdbId: imdbId, orTMDBId: tmdbId, completion: { (tmdb, image, error) in
-                if let tmdb = tmdb { movie.tmdbId = tmdb }
-                if let image = image { movie.largeCoverImage = image }
-                completion(movie, nil)
-            })
+            guard let value = response.result.value else {completion(nil, response.result.error as NSError?); return}
+            completion(Mapper<Movie>().map(JSONObject: value), nil)
         }
     }
     

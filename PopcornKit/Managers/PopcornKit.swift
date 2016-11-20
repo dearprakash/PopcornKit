@@ -75,12 +75,11 @@ public func loadShows(
  Get more show information.
  
  - Parameter imdbId:        The imdb identification code of the show.
- - Parameter tmdbId:        The tmdb identification code of the show.
  
  - Parameter completion:    Completion handler for the request. Returns show upon success, error upon failure.
  */
-public func getShowInfo(_ imdbId: String, tmdbId: Int?, completion: @escaping (_ show: Show?, _ error: NSError?) -> Void) {
-    ShowManager.shared.getInfo(imdbId, tmdbId: tmdbId, completion: completion)
+public func getShowInfo(_ imdbId: String, completion: @escaping (_ show: Show?, _ error: NSError?) -> Void) {
+    ShowManager.shared.getInfo(imdbId, completion: completion)
 }
 
 
@@ -116,12 +115,11 @@ public func loadMovies(
  Get more movie information.
  
  - Parameter imdbId:        The imdb identification code of the movie.
- - Parameter tmdbId:        The tmdb identification code of the movie.
  
  - Parameter completion:    Completion handler for the request. Returns movie upon success, error upon failure.
  */
-public func getMovieInfo(_ imdbId: String, tmdbId: Int?, completion: @escaping (_ movie: Movie?, _ error: NSError?) -> Void) {
-    MovieManager.shared.getInfo(imdbId, tmdbId: tmdbId, completion: completion)
+public func getMovieInfo(_ imdbId: String, completion: @escaping (_ movie: Movie?, _ error: NSError?) -> Void) {
+    MovieManager.shared.getInfo(imdbId, completion: completion)
 }
 
 /**

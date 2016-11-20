@@ -8,11 +8,11 @@ import ObjectMapper
  */
 public struct Subtitle: Equatable {
     /// Language string of the subtitle. Eg. English.
-    public var language: String!
+    public let language: String
     /// Link to the subtitle zip.
-    public var link: String!
+    public let link: String
     /// Two letter ISO language code of the subtitle eg. en.
-    public var ISO639: String!
+    public let ISO639: String
     
     public init(language: String, link: String, ISO639: String) {
         self.language = language

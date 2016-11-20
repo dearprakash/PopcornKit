@@ -258,21 +258,20 @@ open class TraktManager: NetworkManager {
                 let group = DispatchGroup()
                 for (_, item) in responseObject {
                     guard let type = item["type"].string else { continue }
-                    if var media = Mapper<T>(context: TraktContext()).map(JSONObject: item[type].dictionaryObject) {
+                    if let media = Mapper<T>(context: TraktContext()).map(JSONObject: item[type].dictionaryObject) {
                         guard var episode = media as? Episode, let show = Mapper<Show>(context: TraktContext()).map(JSONObject: item["show"].dictionaryObject) else {
                             group.enter()
-                            TMDBManager.shared.getPoster(forMediaOfType: media is Movie ? .movies : .shows, withImdbId: media.id, orTMDBId: media.tmdbId, completion: { (_, image, error) in
-                                if let image = image { media.largeCoverImage = image }
-                                watchlist.append(media)
+                            let completion: (Media?, NSError?) -> Void = { (media, _) in
+                                guard let media = media else { return }
+                                watchlist.append(media as! T)
                                 group.leave()
-                            })
+                            }
+                            media is Movie ?  MovieManager.shared.getInfo(media.id, completion: completion) : ShowManager.shared.getInfo(media.id, completion: completion)
                             continue
                         }
                         episode.show = show
                         watchlist.append(episode as! T)
                     }
-                    
-                    
                 }
                 group.notify(queue: .main, execute: { completion(watchlist, nil) })
             }
@@ -353,13 +352,14 @@ open class TraktManager: NetworkManager {
             let group = DispatchGroup()
             var array = [T]()
             for (_, item) in responseObject {
-                guard var media = Mapper<T>(context: TraktContext()).map(JSONObject: item.dictionaryObject) else { continue }
+                guard let id = item["ids"]["imdb"].string else { continue }
                 group.enter()
-                TMDBManager.shared.getPoster(forMediaOfType: media is Movie ? .movies : .shows, withImdbId: media.id, orTMDBId: media.tmdbId, completion: { (_, image, error) in
-                    if let image = image { media.largeCoverImage = image }
-                    array.append(media)
+                let completion: (Media?, NSError?) -> Void = { (media, _) in
+                    guard let media = media else { return }
+                    array.append(media as! T)
                     group.leave()
-                })
+                }
+                media is Movie ?  MovieManager.shared.getInfo(id, completion: completion) : ShowManager.shared.getInfo(id, completion: completion)
             }
             group.notify(queue: .main, execute: { completion(array, nil) })
         }
@@ -384,23 +384,25 @@ open class TraktManager: NetworkManager {
             let group = DispatchGroup()
             for (_, item) in responseObject["crew"] {
                 for (_, item) in item {
-                    guard var media = Mapper<T>(context: TraktContext()).map(JSONObject: item[typeString].dictionaryObject) else { continue }
+                    guard let id = item[typeString]["ids"]["imdb"].string else { continue }
                     group.enter()
-                    TMDBManager.shared.getPoster(forMediaOfType: media is Movie ? .movies : .shows, withImdbId: media.id, orTMDBId: media.tmdbId, completion: { (_, image, error) in
-                        if let image = image { media.largeCoverImage = image }
-                        medias.append(media)
+                    let completion: (Media?, NSError?) -> Void = { (media, _) in
+                        guard let media = media else { return }
+                        medias.append(media as! T)
                         group.leave()
-                    })
+                    }
+                    type is Movie.Type ?  MovieManager.shared.getInfo(id, completion: completion) : ShowManager.shared.getInfo(id, completion: completion)
                 }
             }
             for (_, item) in responseObject["cast"] {
-                guard var media = Mapper<T>(context: TraktContext()).map(JSONObject: item[typeString].dictionaryObject) else { continue }
+                guard let id = item[typeString]["ids"]["imdb"].string else { continue }
                 group.enter()
-                TMDBManager.shared.getPoster(forMediaOfType: media is Movie ? .movies : .shows, withImdbId: media.id, orTMDBId: media.tmdbId, completion: { (_, image, error) in
-                    if let image = image { media.largeCoverImage = image }
-                    medias.append(media)
+                let completion: (Media?, NSError?) -> Void = { (media, _) in
+                    guard let media = media else { return }
+                    medias.append(media as! T)
                     group.leave()
-                })
+                }
+                type is Movie.Type ?  MovieManager.shared.getInfo(id, completion: completion) : ShowManager.shared.getInfo(id, completion: completion)
             }
             group.notify(queue: .main, execute: { completion(medias, nil) })
         }

@@ -15,7 +15,7 @@ public struct Movie: Media, Equatable {
     /// Imdb id of the movie.
     public let id: String
     
-    /// TMDB id of the movie. If movie is loaded from Trakt, this will not be `nil`. It is otherwise scraped from the image url. If movie has no image, this will be `nil` and `getTMDBId:forImdbId:completion:` will have to be called on `TraktManager`.
+    /// TMDB id of the movie. If movie is loaded from Trakt, this will not be `nil`. Otherwise it will be `nil` and `getTMDBId:forImdbId:completion:` will have to be called on `TraktManager`.
     public var tmdbId: Int?
     
     /// The slug of the movie. May be wrong as it is being computed from title and year instead of being pulled from apis.
@@ -48,14 +48,14 @@ public struct Movie: Media, Equatable {
     public let certification: String
     
     
-    /// If fanart image is available, it is returned with size 853*480.
+    /// If fanart image is available, it is returned with size 650*366.
     public var smallBackgroundImage: String? {
-        return largeBackgroundImage?.replacingOccurrences(of: "original", with: "thumb")
+        return largeBackgroundImage?.replacingOccurrences(of: "w1920", with: "w650")
     }
     
     /// If fanart image is available, it is returned with size 1280*720.
     public var mediumBackgroundImage: String? {
-        return largeBackgroundImage?.replacingOccurrences(of: "original", with: "medium")
+        return largeBackgroundImage?.replacingOccurrences(of: "w1920", with: "w1280")
     }
     
     /// If fanart image is available, it is returned with size 1920*1080.
@@ -107,7 +107,6 @@ public struct Movie: Media, Equatable {
     private init(_ map: Map) throws {
         if map.context is TraktContext {
             self.id = try map.value("ids.imdb")
-            self.tmdbId = try map.value("ids.tmdb")
             self.year = try map.value("year", using: StringTransform())
             self.rating = try map.value("rating")
             self.summary = ((try? map.value("overview")) ?? "No summary available.").replacingOccurrences(of: "\"", with: "") // Stop issues with escaping characters in xml
@@ -117,16 +116,13 @@ public struct Movie: Media, Equatable {
             self.year = try map.value("year")
             self.rating = try map.value("rating.percentage")
             self.summary = ((try? map.value("synopsis")) ?? "No summary available.").replacingOccurrences(of: "\"", with: "") // Stop issues with escaping characters in xml
-            self.largeCoverImage = try? map.value("images.poster")
-            self.largeBackgroundImage = try? map.value("images.fanart")
+            self.largeCoverImage = try? map.value("images.poster"); largeCoverImage = largeCoverImage?.replacingOccurrences(of: "w500", with: "w1920")
+            self.largeBackgroundImage = try? map.value("images.fanart"); largeBackgroundImage = largeBackgroundImage?.replacingOccurrences(of: "w500", with: "w1000")
             self.runtime = try map.value("runtime")
-            if let id = largeBackgroundImage?.slice(from: "http://assets.fanart.tv/fanart/movies/", to: "/") // Scrape tmdb id from fanart.tv image url.
-            {
-                self.tmdbId = Int(id)
-            }
 
         }
         self.title = try map.value("title")
+        self.tmdbId = try? map.value("ids.tmdb")
         self.slug = title.slugged
         self.trailer = try? map.value("trailer"); trailer == "false" ? trailer = nil : ()
         self.certification = try map.value("certification")
@@ -150,6 +146,7 @@ public struct Movie: Media, Equatable {
             }
         case .toJSON:
             id >>> map["imdb_id"]
+            tmdbId >>> map["ids.tmdb"]
             year >>> map["year"]
             rating >>> map["rating.percentage"]
             summary >>> map["synopsis"]

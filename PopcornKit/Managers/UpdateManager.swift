@@ -80,8 +80,7 @@ public final class UpdateManager: NSObject {
     
     private func checkForUpdates(_ completion: ((_ success: Bool) -> Void)? = nil) {
         lastVersionCheckPerformedOnDate = Date()
-        let repo = UIDevice.current.userInterfaceIdiom == .tv ? "PopcornTimeTV" : "PopcornTimeiOS"
-        Alamofire.request("https://api.github.com/repos/PopcornTimeTV/\(repo)/releases").validate().responseJSON { (response) in
+        Alamofire.request("https://api.github.com/repos/PopcornTimeTV/PopcornTimeTV/releases").validate().responseJSON { (response) in
             guard let responseObject = response.result.value as? [String: AnyObject] else { completion?(false); return }
             let sortedReleases = responseObject.map({VersionString($1["tag_name"] as! String, $1["published_at"] as! String)!}).sorted(by: {$0.0 > $0.1})
             if let latestRelease = sortedReleases.first,

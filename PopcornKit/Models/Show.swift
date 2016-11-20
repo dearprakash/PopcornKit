@@ -53,14 +53,14 @@ public struct Show: Media, Equatable {
         return Array(Set(episodes.map({$0.season}))).sorted()
     }
     
-    /// If fanart image is available, it is returned with size 853*480.
+    /// If fanart image is available, it is returned with size 650*366.
     public var smallBackgroundImage: String? {
-        return largeBackgroundImage?.replacingOccurrences(of: "original", with: "thumb")
+        return largeBackgroundImage?.replacingOccurrences(of: "w1920", with: "w650")
     }
     
     /// If fanart image is available, it is returned with size 1280*720.
     public var mediumBackgroundImage: String? {
-        return largeBackgroundImage?.replacingOccurrences(of: "original", with: "medium")
+        return largeBackgroundImage?.replacingOccurrences(of: "w1920", with: "w1280")
     }
     
     /// If fanart image is available, it is returned with size 1920*1080.
@@ -114,8 +114,8 @@ public struct Show: Media, Equatable {
             self.tvdbId = try? map.value("tvdb_id")
             self.year = try map.value("year")
             self.rating = try map.value("rating.percentage")
-            self.largeCoverImage = try? map.value("images.poster")
-            self.largeBackgroundImage = try? map.value("images.fanart")
+            self.largeCoverImage = try? map.value("images.poster"); largeCoverImage = largeCoverImage?.replacingOccurrences(of: "w500", with: "w1920")
+            self.largeBackgroundImage = try? map.value("images.fanart"); largeBackgroundImage = largeBackgroundImage?.replacingOccurrences(of: "w500", with: "w1000")
             self.slug = try map.value("slug")
             self.airDay = try? map.value("air_day")
             self.airTime = try? map.value("air_time")
