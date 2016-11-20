@@ -262,8 +262,7 @@ open class TraktManager: NetworkManager {
                         guard var episode = media as? Episode, let show = Mapper<Show>(context: TraktContext()).map(JSONObject: item["show"].dictionaryObject) else {
                             group.enter()
                             let completion: (Media?, NSError?) -> Void = { (media, _) in
-                                guard let media = media else { return }
-                                watchlist.append(media as! T)
+                                if let media = media { watchlist.append(media as! T) }
                                 group.leave()
                             }
                             media is Movie ?  MovieManager.shared.getInfo(media.id, completion: completion) : ShowManager.shared.getInfo(media.id, completion: completion)
@@ -307,7 +306,7 @@ open class TraktManager: NetworkManager {
             })
         }
     }
-
+    
     /**
      Removes specified media from users watchlist.
      
@@ -355,8 +354,7 @@ open class TraktManager: NetworkManager {
                 guard let id = item["ids"]["imdb"].string else { continue }
                 group.enter()
                 let completion: (Media?, NSError?) -> Void = { (media, _) in
-                    guard let media = media else { return }
-                    array.append(media as! T)
+                    if let media = media { array.append(media as! T) }
                     group.leave()
                 }
                 media is Movie ?  MovieManager.shared.getInfo(id, completion: completion) : ShowManager.shared.getInfo(id, completion: completion)
@@ -387,8 +385,7 @@ open class TraktManager: NetworkManager {
                     guard let id = item[typeString]["ids"]["imdb"].string else { continue }
                     group.enter()
                     let completion: (Media?, NSError?) -> Void = { (media, _) in
-                        guard let media = media else { return }
-                        medias.append(media as! T)
+                        if let media = media { medias.append(media as! T) }
                         group.leave()
                     }
                     type is Movie.Type ?  MovieManager.shared.getInfo(id, completion: completion) : ShowManager.shared.getInfo(id, completion: completion)
@@ -398,8 +395,7 @@ open class TraktManager: NetworkManager {
                 guard let id = item[typeString]["ids"]["imdb"].string else { continue }
                 group.enter()
                 let completion: (Media?, NSError?) -> Void = { (media, _) in
-                    guard let media = media else { return }
-                    medias.append(media as! T)
+                    if let media = media { medias.append(media as! T) }
                     group.leave()
                 }
                 type is Movie.Type ?  MovieManager.shared.getInfo(id, completion: completion) : ShowManager.shared.getInfo(id, completion: completion)
@@ -523,11 +519,11 @@ extension TraktManager {
         DispatchQueue.global(qos: .default).async {
             do {
                 try OAuthCredential(Trakt.base + Trakt.auth + Trakt.token,
-                                                           code: code,
-                                                           redirectURI: "PopcornTime://trakt",
-                                                           clientID: Trakt.apiKey,
-                                                           clientSecret: Trakt.apiSecret,
-                                                           useBasicAuthentication: false).store(withIdentifier: "trakt")
+                                    code: code,
+                                    redirectURI: "PopcornTime://trakt",
+                                    clientID: Trakt.apiKey,
+                                    clientSecret: Trakt.apiSecret,
+                                    useBasicAuthentication: false).store(withIdentifier: "trakt")
                 self.delegate?.authenticationDidSucceed?()
             } catch let error as NSError {
                 self.delegate?.authenticationDidFail?(withError: error)
