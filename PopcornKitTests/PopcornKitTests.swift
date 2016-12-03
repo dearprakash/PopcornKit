@@ -18,7 +18,7 @@ class PopcornKitTests: XCTestCase {
     
     func testMovie() {
         let expectation = self.expectation(description: "Fetch single movie")
-        PopcornKit.getMovieInfo("tt1431045", tmdbId: nil) { (movie, error) in
+        PopcornKit.getMovieInfo("tt1431045") { (movie, error) in
             XCTAssertNotNil(movie, error?.localizedDescription ?? "Unknown error")
             expectation.fulfill()
         }
@@ -39,7 +39,7 @@ class PopcornKitTests: XCTestCase {
     
     func testShow() {
         let expectation = self.expectation(description: "Fetch single show")
-        PopcornKit.getShowInfo("tt2396758", tmdbId: nil) { (show, error) in
+        PopcornKit.getShowInfo("tt2396758") { (show, error) in
             XCTAssertNotNil(show, error?.localizedDescription ?? "Unknown error")
             expectation.fulfill()
         }
@@ -92,7 +92,7 @@ class PopcornKitTests: XCTestCase {
     
     func testRelated() {
         let expectation = self.expectation(description: "Get related movie.")
-        PopcornKit.getMovieInfo("tt1431045", tmdbId: nil) { (movie, error) in
+        PopcornKit.getMovieInfo("tt1431045") { (movie, error) in
             XCTAssertNotNil(movie, error?.localizedDescription ?? "Unknown error")
             TraktManager.shared.getRelated(movie!, completion: { (media, error) in
                 XCTAssertNotEqual(media.count, 0, error?.localizedDescription ?? "Unknown error")

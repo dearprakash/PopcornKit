@@ -44,6 +44,12 @@ extension Media {
     public var largeCoverImage: String? { get{ return nil } set {} }
 }
 
+extension String {
+    public var isAmazonUrl: Bool {
+        return contains("https://images-na.ssl-images-amazon.com/images/")
+    }
+}
+
 open class StringTransform: TransformType {
     public typealias Object = String
     public typealias JSON = Int

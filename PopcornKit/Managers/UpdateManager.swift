@@ -2,6 +2,7 @@
 
 import Foundation
 import Alamofire
+import SwiftyJSON
 
 /**
  A manager class that automatically looks for new releases from github and presents them to the user.
@@ -59,7 +60,7 @@ public final class UpdateManager: NSObject {
     /// Returns the number of days it has been since `checkForUpdates:completion:` has been called.
     private var daysSinceLastVersionCheckDate: Int {
         let calendar = Calendar.current
-        let components = (calendar as NSCalendar).components(.day, from: lastVersionCheckPerformedOnDate, to: Date(), options: [])
+        let components = calendar.dateComponents([.year, .month, .day, .hour, .minute], from: lastVersionCheckPerformedOnDate, to: Date())
         return components.day!
     }
     
@@ -69,23 +70,22 @@ public final class UpdateManager: NSObject {
      - Parameter sucess: Optional callback indicating the status of the operation.
      */
     public func checkVersion(_ checkType: CheckType, completion: ((_ success: Bool) -> Void)? = nil) {
-        if checkType == .immediately {
+        if checkType == .immediately || checkType.rawValue <= daysSinceLastVersionCheckDate {
             checkForUpdates(completion)
-        } else {
-            if checkType.rawValue <= daysSinceLastVersionCheckDate {
-                checkForUpdates(completion)
-            }
         }
     }
     
     private func checkForUpdates(_ completion: ((_ success: Bool) -> Void)? = nil) {
         lastVersionCheckPerformedOnDate = Date()
         Alamofire.request("https://api.github.com/repos/PopcornTimeTV/PopcornTimeTV/releases").validate().responseJSON { (response) in
-            guard let responseObject = response.result.value as? [String: AnyObject] else { completion?(false); return }
-            let sortedReleases = responseObject.map({VersionString($1["tag_name"] as! String, $1["published_at"] as! String)!}).sorted(by: {$0.0 > $0.1})
+            guard let value = response.result.value else { completion?(false); return }
+            let responseObject = JSON(value)
+            let sortedReleases = responseObject.flatMap({VersionString($1["tag_name"].string!, $1["published_at"].string!)}).sorted(by: {$0.0 > $0.1})
+            
             if let latestRelease = sortedReleases.first,
-                let currentRelease = sortedReleases.filter({$0.buildNumber == self.currentApplicationVersion}).first
-                , latestRelease > currentRelease && self.skipReleaseVersion?.buildNumber != latestRelease.buildNumber {
+                let currentRelease = sortedReleases.filter({$0.buildNumber == self.currentApplicationVersion}).first,
+                latestRelease > currentRelease && self.skipReleaseVersion?.buildNumber != latestRelease.buildNumber {
+                
                 let alert = UIAlertController(title: "Update Available", message: "\(latestRelease.releaseType.rawValue.capitalized) version \(latestRelease.buildNumber) of Popcorn Time is now available.", preferredStyle: .alert)
                 
                 var cydiaInstalled = false
@@ -199,7 +199,6 @@ extension UIAlertController {
         window.rootViewController = UIViewController()
         window.windowLevel = UIWindowLevelAlert + 1
         window.makeKeyAndVisible()
-        if let rootViewController = window.rootViewController , rootViewController is UIAlertController {return}
         window.rootViewController!.present(self, animated: true, completion: nil)
     }
 }
