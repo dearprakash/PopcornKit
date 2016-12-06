@@ -136,4 +136,25 @@ open class TMDBManager: NetworkManager {
             completion(id, image, nil)
         }
     }
+    
+    /**
+     Load Movie or TV Show logos from Fanart.tv.
+     
+     - Parameter forMediaOfType:    The type of the media. Only available for movies and shows.
+     - Parameter id:                The imdb id of the movie or the tvdb id of the show.
+     
+     - Parameter completion:        The completion handler for the request containing an optional image and an optional error.
+     */
+    open func getLogo(forMediaOfType type: Trakt.MediaType, id: String, completion: @escaping (String?, NSError?) -> Void) {
+        self.manager.request(Fanart.base + (type == .movies ? Fanart.movies : Fanart.tv) + "/\(id)", parameters: Fanart.defaultParameters).validate().responseJSON { (response) in
+            guard let value = response.result.value else { completion(nil, response.result.error as NSError?); return }
+            let responseDict = JSON(value)
+            
+            let typeString = type == .movies ? "movie" : "tv"
+            let image = responseDict["hd\(typeString)logo"].first?.1["url"].string
+            
+            completion(image, nil)
+        }
+        
+    }
 }

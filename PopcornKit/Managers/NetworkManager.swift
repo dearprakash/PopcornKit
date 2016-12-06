@@ -89,6 +89,15 @@ public struct TMDB {
     static let defaultHeaders = ["api_key": TMDB.apiKey]
 }
 
+public struct Fanart {
+    static let apiKey = "bd2753f04538b01479e39e695308b921"
+    static let base = "http://webservice.fanart.tv/v3"
+    static let tv = "/tv"
+    static let movies = "/movies"
+    
+    static let defaultParameters = ["api_key": Fanart.apiKey]
+}
+
 open class NetworkManager: NSObject {
     internal let manager: SessionManager = {
         var configuration = URLSessionConfiguration.default
