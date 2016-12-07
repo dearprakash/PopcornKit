@@ -36,6 +36,9 @@ public struct Show: Media, Equatable {
     /// Summary of the show and anime. Will default to "No summary available." until `getInfo:imdbId:completion` is called on `ShowManager` and shows are updated. **However**, there may not be a summary provided by the api.
     public let summary: String
     
+    /// Network that the show is officially released on. **Anime Not Supported**. Will be `nil` until `getInfo:imdbId:completion` is called on `ShowManager` and shows are updated.
+    public var network: String?
+    
     /// Air day of the show. **Anime Not Supported**. Will be `nil` until `getInfo:imdbId:completion` is called on `ShowManager` and shows are updated.
     public var airDay: String?
     
@@ -131,6 +134,7 @@ public struct Show: Media, Equatable {
         self.genres = (try? map.value("genres")) ?? [String]()
         self.episodes = (try? map.value("episodes")) ?? [Episode]()
         self.tmdbId = try? map.value("ids.tmdb")
+        self.network = try? map.value("network")
         
         var episodes = [Episode]()
         for var episode in self.episodes {
