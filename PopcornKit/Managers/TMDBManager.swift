@@ -151,8 +151,8 @@ open class TMDBManager: NetworkManager {
             let responseDict = JSON(value)
             
             let typeString = type == .movies ? "movie" : "tv"
-            let image = responseDict["hd\(typeString)logo"].first?.1["url"].string
-            
+            let image = responseDict["hd\(typeString)logo"].first(where: { $0.1["lang"].string == "en" })?.1["url"].string
+
             completion(image, nil)
         }
         
