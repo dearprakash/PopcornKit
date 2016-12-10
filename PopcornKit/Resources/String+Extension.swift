@@ -26,6 +26,10 @@ extension String {
             .joined(separator: "-")
     }
     
+    var cleaned: String {
+        return replacingOccurrences(of: "\"", with: "")
+    }
+    
     static func random(_ length: Int) -> String {
         let alphabet = "-_1234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
         return String((0..<length).map { _ -> Character in
