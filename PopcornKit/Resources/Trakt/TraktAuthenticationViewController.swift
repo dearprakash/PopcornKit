@@ -4,9 +4,7 @@
 import UIKit
 
 public class TraktAuthenticationViewController: UIViewController {
-    @IBOutlet weak var qrImageView: UIImageView!
 	@IBOutlet weak var codeLabel: UILabel!
-	@IBOutlet weak var activityIndicatorView: UIActivityIndicatorView!
 
 	var intervalTimer: Timer?
     var deviceCode: String?
@@ -15,7 +13,6 @@ public class TraktAuthenticationViewController: UIViewController {
 	public override func viewWillAppear(_ animated: Bool) {
 		super.viewWillAppear(true)
 		getNewCode()
-		qrImageView.image = UIImage(named: "TraktQRCode.png", in: TraktAuthenticationViewController.bundle, compatibleWith: nil)
 	}
 
 	public override func viewWillDisappear(_ animated: Bool) {
@@ -25,18 +22,17 @@ public class TraktAuthenticationViewController: UIViewController {
 	}
 
 	private func getNewCode() {
-		activityIndicatorView.startAnimating()
         TraktManager.shared.generateCode { [weak self] (displayCode, deviceCode, expires, interval, error) in
             guard let displayCode = displayCode,
                 let deviceCode = deviceCode,
                 let expires = expires,
                 let interval = interval,
-                let weakSelf = self,
+                let `self` = self,
                 error == nil else {return}
-            weakSelf.codeLabel.text = displayCode
-            weakSelf.expiresIn = expires
-            weakSelf.deviceCode = deviceCode
-            weakSelf.intervalTimer = Timer.scheduledTimer(timeInterval: interval, target: weakSelf, selector: #selector(weakSelf.poll), userInfo: nil, repeats: true)
+            self.codeLabel.text = displayCode
+            self.expiresIn = expires
+            self.deviceCode = deviceCode
+            self.intervalTimer = Timer.scheduledTimer(timeInterval: interval, target: self, selector: #selector(self.poll), userInfo: nil, repeats: true)
         }
 	}
 
