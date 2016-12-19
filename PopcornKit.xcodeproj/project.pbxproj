@@ -7,6 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		4D13351F1E0850C100772A4D /* MPAVRoutingControllerDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D13351E1E0850C100772A4D /* MPAVRoutingControllerDelegate.swift */; };
+		4D1335211E08519400772A4D /* MPAVRoutingController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D1335201E08519400772A4D /* MPAVRoutingController.swift */; };
+		4D1335231E0852B100772A4D /* MPAVBatteryLevel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D1335221E0852B100772A4D /* MPAVBatteryLevel.swift */; };
+		4D1335251E08530F00772A4D /* MPAudioDeviceController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D1335241E08530F00772A4D /* MPAudioDeviceController.swift */; };
+		4D1335271E0853ED00772A4D /* MPAVRoute.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D1335261E0853ED00772A4D /* MPAVRoute.swift */; };
 		4D5C02EE1D8722FD00BA3E51 /* PopcornKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4D5C02E41D8722FD00BA3E51 /* PopcornKit.framework */; };
 		4D5C030A1D87231100BA3E51 /* PopcornKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4D5C03001D87231100BA3E51 /* PopcornKit.framework */; };
 		4D689A461DD89275001D1318 /* GoogleCastManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D689A381DD89275001D1318 /* GoogleCastManager.swift */; };
@@ -95,6 +100,11 @@
 		1C3B83C0CE981E8D384FB2EF /* Pods-PopcornKit tvOS.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PopcornKit tvOS.release.xcconfig"; path = "Pods/Target Support Files/Pods-PopcornKit tvOS/Pods-PopcornKit tvOS.release.xcconfig"; sourceTree = "<group>"; };
 		2ED5ADA795CF0F965FF72264 /* Pods-PopcornKitTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PopcornKitTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-PopcornKitTests/Pods-PopcornKitTests.release.xcconfig"; sourceTree = "<group>"; };
 		3FBD9D2FCC4B44FECC1C6DD6 /* Pods-PopcornKitTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PopcornKitTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-PopcornKitTests/Pods-PopcornKitTests.debug.xcconfig"; sourceTree = "<group>"; };
+		4D13351E1E0850C100772A4D /* MPAVRoutingControllerDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = MPAVRoutingControllerDelegate.swift; path = "Resources/Media Player/MPAVRoutingControllerDelegate.swift"; sourceTree = "<group>"; };
+		4D1335201E08519400772A4D /* MPAVRoutingController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = MPAVRoutingController.swift; path = "Resources/Media Player/MPAVRoutingController.swift"; sourceTree = "<group>"; };
+		4D1335221E0852B100772A4D /* MPAVBatteryLevel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = MPAVBatteryLevel.swift; path = "Resources/Media Player/MPAVBatteryLevel.swift"; sourceTree = "<group>"; };
+		4D1335241E08530F00772A4D /* MPAudioDeviceController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = MPAudioDeviceController.swift; path = "Resources/Media Player/MPAudioDeviceController.swift"; sourceTree = "<group>"; };
+		4D1335261E0853ED00772A4D /* MPAVRoute.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = MPAVRoute.swift; path = "Resources/Media Player/MPAVRoute.swift"; sourceTree = "<group>"; };
 		4D208DA01D8460BA00CB8EDB /* Person.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Person.swift; path = Models/Person.swift; sourceTree = "<group>"; };
 		4D208DA21D84614100CB8EDB /* Media.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Media.swift; path = Models/Media.swift; sourceTree = "<group>"; };
 		4D208DA41D8461D200CB8EDB /* Subtitle.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Subtitle.swift; path = Models/Subtitle.swift; sourceTree = "<group>"; };
@@ -188,9 +198,22 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		4D13351D1E08509700772A4D /* Media Player */ = {
+			isa = PBXGroup;
+			children = (
+				4D13351E1E0850C100772A4D /* MPAVRoutingControllerDelegate.swift */,
+				4D1335201E08519400772A4D /* MPAVRoutingController.swift */,
+				4D1335221E0852B100772A4D /* MPAVBatteryLevel.swift */,
+				4D1335241E08530F00772A4D /* MPAudioDeviceController.swift */,
+				4D1335261E0853ED00772A4D /* MPAVRoute.swift */,
+			);
+			name = "Media Player";
+			sourceTree = "<group>";
+		};
 		4D208DA81D8467F400CB8EDB /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				4D13351D1E08509700772A4D /* Media Player */,
 				4DEA8A601D9054FA00224342 /* Trakt */,
 				4DE3354A1D857A1400B6AB6D /* OAuthCredential.swift */,
 				4D208DA61D8467D600CB8EDB /* String+Extension.swift */,
@@ -570,6 +593,7 @@
 				4D6901351D872E3D00F26AD9 /* Show.swift in Sources */,
 				4D6901291D872E3D00F26AD9 /* String+Extension.swift in Sources */,
 				4D689A4D1DD89275001D1318 /* PopcornKit.swift in Sources */,
+				4D1335251E08530F00772A4D /* MPAudioDeviceController.swift in Sources */,
 				4D6901371D872E3D00F26AD9 /* Torrent.swift in Sources */,
 				4D69013A1D872E3D00F26AD9 /* Crew.swift in Sources */,
 				4D6901471D8736F600F26AD9 /* NSData+GZIP.m in Sources */,
@@ -581,6 +605,7 @@
 				4D689A4C1DD89275001D1318 /* ShowManager.swift in Sources */,
 				4D689A491DD89275001D1318 /* WatchedlistManager.swift in Sources */,
 				4D6901341D872E3D00F26AD9 /* Episode.swift in Sources */,
+				4D1335211E08519400772A4D /* MPAVRoutingController.swift in Sources */,
 				4D6901381D872E3D00F26AD9 /* Subtitle.swift in Sources */,
 				4D6901281D872E3D00F26AD9 /* OAuthCredential.swift in Sources */,
 				4D6901391D872E3D00F26AD9 /* Actor.swift in Sources */,
@@ -588,6 +613,9 @@
 				4D689A4E1DD89275001D1318 /* WatchlistManager.swift in Sources */,
 				4D689A511DD89275001D1318 /* UpdateManager.swift in Sources */,
 				4D689A4B1DD89275001D1318 /* MovieManager.swift in Sources */,
+				4D1335271E0853ED00772A4D /* MPAVRoute.swift in Sources */,
+				4D1335231E0852B100772A4D /* MPAVBatteryLevel.swift in Sources */,
+				4D13351F1E0850C100772A4D /* MPAVRoutingControllerDelegate.swift in Sources */,
 				4D6901361D872E3D00F26AD9 /* Movie.swift in Sources */,
 				4D689A501DD89275001D1318 /* SubtitlesManager.swift in Sources */,
 			);

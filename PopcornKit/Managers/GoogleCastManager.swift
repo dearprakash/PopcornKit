@@ -9,7 +9,7 @@ public typealias CastMetaData = (title: String, image: URL?, contentType: String
 open class GoogleCastManager: NSObject, GCKDeviceScannerListener, GCKSessionManagerListener {
     
     public var dataSourceArray = [GCKDevice]()
-    public weak var delegate: ConnectDevicesProtocol?
+    public weak var delegate: ConnectDevicesDelegate?
     
     public var deviceScanner: GCKDeviceScanner!
     
