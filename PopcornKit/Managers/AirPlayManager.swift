@@ -15,6 +15,10 @@ public protocol ConnectDevicesDelegate: class {
     func didConnectToDevice(deviceIsChromecast chromecast: Bool)
 }
 
+extension ConnectDevicesDelegate {
+    public func didConnectToDevice(deviceIsChromecast chromecast: Bool) {}
+}
+
 open class AirPlayManager: NSObject, MPAVRoutingControllerDelegate {
     
     public var dataSourceArray = [MPAVRoute]()
