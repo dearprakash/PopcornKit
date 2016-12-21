@@ -1,5 +1,4 @@
 
-#if os(iOS)
 
 import Foundation
 import MediaPlayer
@@ -80,5 +79,3 @@ open class AirPlayManager: NSObject, MPAVRoutingControllerDelegate {
         audioDeviceController.setRouteDiscoveryEnabled?(false)
     }
 }
-
-#endif
