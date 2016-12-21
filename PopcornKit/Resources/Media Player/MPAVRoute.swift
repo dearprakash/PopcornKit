@@ -34,6 +34,9 @@ import Foundation
      */
     @objc optional func setWirelessDisplayRoute(_ route: MPAVRoute)
     
+    /// Detailed information about the route.
+    @objc optional var avRouteDescription: [String: Any] { get }
+    
     /// An array of...
     @objc optional var auxiliaryDevices: [Any] { get } // TODO: Explicitly mark type of array.
     
