@@ -69,6 +69,12 @@
 		4D6901481D8736F600F26AD9 /* NSData+GZIP.m in Sources */ = {isa = PBXBuildFile; fileRef = 4D6901461D8736F600F26AD9 /* NSData+GZIP.m */; };
 		4D69014A1D873A3200F26AD9 /* NSData+GZIP.h in Headers */ = {isa = PBXBuildFile; fileRef = 4D6901431D8736B200F26AD9 /* NSData+GZIP.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4D69014B1D873A3300F26AD9 /* NSData+GZIP.h in Headers */ = {isa = PBXBuildFile; fileRef = 4D6901431D8736B200F26AD9 /* NSData+GZIP.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4DAFAA3F1E0C223800AE0F9A /* MPAVRoute.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D1335261E0853ED00772A4D /* MPAVRoute.swift */; };
+		4DAFAA401E0C223B00AE0F9A /* MPAudioDeviceController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D1335241E08530F00772A4D /* MPAudioDeviceController.swift */; };
+		4DAFAA411E0C223D00AE0F9A /* MPAVBatteryLevel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D1335221E0852B100772A4D /* MPAVBatteryLevel.swift */; };
+		4DAFAA421E0C224000AE0F9A /* MPAVRoutingController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D1335201E08519400772A4D /* MPAVRoutingController.swift */; };
+		4DAFAA431E0C224200AE0F9A /* MPAVRoutingControllerDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D13351E1E0850C100772A4D /* MPAVRoutingControllerDelegate.swift */; };
+		4DAFAA441E0C224700AE0F9A /* AirPlayManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D689A441DD89275001D1318 /* AirPlayManager.swift */; };
 		4DEA8A641D90552500224342 /* TraktAuthenticationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4DEA8A611D90552500224342 /* TraktAuthenticationViewController.swift */; };
 		4DEA8A651D90552500224342 /* TraktAuthenticationViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4DEA8A621D90552500224342 /* TraktAuthenticationViewController.xib */; };
 		4DEA8A661D90552500224342 /* TraktQRCode.png in Resources */ = {isa = PBXBuildFile; fileRef = 4DEA8A631D90552500224342 /* TraktQRCode.png */; };
@@ -644,17 +650,23 @@
 				4D689A591DD89285001D1318 /* MovieManager.swift in Sources */,
 				4D6901121D872E3B00F26AD9 /* Person.swift in Sources */,
 				4D689A571DD89285001D1318 /* WatchedlistManager.swift in Sources */,
+				4DAFAA3F1E0C223800AE0F9A /* MPAVRoute.swift in Sources */,
+				4DAFAA411E0C223D00AE0F9A /* MPAVBatteryLevel.swift in Sources */,
+				4DAFAA421E0C224000AE0F9A /* MPAVRoutingController.swift in Sources */,
 				4D6901481D8736F600F26AD9 /* NSData+GZIP.m in Sources */,
 				4D689A551DD89285001D1318 /* TraktManager.swift in Sources */,
 				4D689A5B1DD89285001D1318 /* PopcornKit.swift in Sources */,
 				4D69010B1D872E3B00F26AD9 /* Episode.swift in Sources */,
 				4DEA8A641D90552500224342 /* TraktAuthenticationViewController.swift in Sources */,
 				4D69010F1D872E3B00F26AD9 /* Subtitle.swift in Sources */,
+				4DAFAA401E0C223B00AE0F9A /* MPAudioDeviceController.swift in Sources */,
+				4DAFAA431E0C224200AE0F9A /* MPAVRoutingControllerDelegate.swift in Sources */,
 				4D6900FF1D872E3B00F26AD9 /* OAuthCredential.swift in Sources */,
 				4D6901101D872E3B00F26AD9 /* Actor.swift in Sources */,
 				4D689A5E1DD89285001D1318 /* SubtitlesManager.swift in Sources */,
 				4D689A561DD89285001D1318 /* TMDBManager.swift in Sources */,
 				4D69010D1D872E3B00F26AD9 /* Movie.swift in Sources */,
+				4DAFAA441E0C224700AE0F9A /* AirPlayManager.swift in Sources */,
 				4D689A5D1DD89285001D1318 /* ThemeSongManager.swift in Sources */,
 				4D689A5F1DD89285001D1318 /* UpdateManager.swift in Sources */,
 				4D689A5C1DD89285001D1318 /* WatchlistManager.swift in Sources */,

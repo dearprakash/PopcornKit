@@ -24,14 +24,16 @@ open class AirPlayManager: NSObject, MPAVRoutingControllerDelegate {
     public var dataSourceArray = [MPAVRoute]()
     public weak var delegate: ConnectDevicesDelegate?
     
-    public let MPAudioDeviceControllerClass = NSClassFromString("MPAudioDeviceController") as! NSObject.Type
-    public let MPAVRoutingControllerClass = NSClassFromString("MPAVRoutingController") as! NSObject.Type
-    public var routingController: MPAVRoutingController
-    public var audioDeviceController: MPAudioDeviceController
+    public let routingController: MPAVRoutingController
+    public let audioDeviceController: MPAudioDeviceController
     
     public override init() {
+        let MPAudioDeviceControllerClass = NSClassFromString("MPAudioDeviceController") as! NSObject.Type
+        let MPAVRoutingControllerClass = NSClassFromString("MPAVRoutingController") as! NSObject.Type
+        
         routingController = MPAVRoutingControllerClass.init() as MPAVRoutingController
         audioDeviceController = MPAudioDeviceControllerClass.init() as MPAudioDeviceController
+        
         super.init()
         audioDeviceController.setRouteDiscoveryEnabled?(true)
         routingController.setDelegate?(self)
@@ -76,10 +78,5 @@ open class AirPlayManager: NSObject, MPAVRoutingControllerDelegate {
     
     public func routingController(_ controller: MPAVRoutingController, pickedRouteDidChange newRoute: MPAVRoute) {
         updateRoutes()
-    }
-    
-    deinit {
-        routingController.setDelegate?(nil)
-        audioDeviceController.setRouteDiscoveryEnabled?(false)
     }
 }
