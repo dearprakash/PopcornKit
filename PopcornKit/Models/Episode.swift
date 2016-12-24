@@ -117,6 +117,16 @@ public struct Episode: Media, Equatable {
     }
 }
 
+// MARK: - Hashable
+
+extension Episode: Hashable {
+    public var hashValue: Int {
+        return id.hashValue
+    }
+}
+
+// MARK: Equatable
+
 public func ==(lhs: Episode, rhs: Episode) -> Bool {
     return lhs.id == rhs.id
 }
