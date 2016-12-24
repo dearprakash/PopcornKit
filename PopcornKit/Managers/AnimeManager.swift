@@ -61,22 +61,19 @@ open class AnimeManager: NetworkManager {
         case year = "year"
         case date = "updated"
         case rating = "rating"
-        case alphabet = "name"
         
-        public static let array = [popularity, rating, date, year, alphabet]
+        public static let array = [popularity, rating, date, year]
         
         public var string: String {
             switch self {
             case .popularity:
                 return "Popular"
             case .year:
-                return "Year"
+                return "New"
             case .date:
-                return "Last Updated"
+                return "Recently Added"
             case .rating:
                 return "Top Rated"
-            case .alphabet:
-                return "A-Z"
             }
         }
     }

@@ -50,22 +50,19 @@ open class MovieManager: NetworkManager {
         case rating = "rating"
         case date = "last added"
         case year = "year"
-        case alphabet = "title"
         
-        public static let array = [trending, popularity, rating, date, year, alphabet]
+        public static let array = [trending, popularity, rating, date, year]
         
         public var string: String {
             switch self {
             case .popularity:
                 return "Popular"
             case .year:
-                return "Year"
+                return "New"
             case .date:
-                return "Release Date"
+                return "Recently Added"
             case .rating:
                 return "Top Rated"
-            case .alphabet:
-                return "A-Z"
             case .trending:
                 return "Trending"
             }
