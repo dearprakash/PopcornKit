@@ -23,6 +23,7 @@ public struct Trakt {
     static let watchlist = "/watchlist"
     static let scrobble = "/scrobble"
     static let imdb = "/imdb"
+    static let tvdb = "/tvdb"
     static let search = "/search"
     
     static let extended = ["extended": "full"]

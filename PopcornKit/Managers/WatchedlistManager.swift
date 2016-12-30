@@ -71,17 +71,17 @@ open class WatchedlistManager {
     /**
      Gets watchedlist locally first and then from Trakt.
      
-     - Returns: Completion block called twice; first returns locally stored watchedlist (may be out of date), second time returns the updated watchedlist from Trakt if available.
+     - Parameter completion: Called if local watchedlist was updated from trakt.
+     
+     - Returns: Locally stored watchedlist (may be out of date if user has authenticated with trakt).
      */
-    open func getWatched(_ completion: (() -> Void)? = nil) {
-        var array = UserDefaults.standard.object(forKey: "\(currentType.rawValue)Watchedlist") as? [String] ?? [String]()
-        completion?()
+    @discardableResult open func getWatched(completion: (([String]) -> Void)? = nil) -> [String] {
         TraktManager.shared.getWatched(forMediaOfType: currentType) { [unowned self] (watchedIds, error) in
             guard error == nil else {return}
-            array = watchedIds
-            UserDefaults.standard.set(array, forKey: "\(self.currentType.rawValue)Watchedlist")
-            completion?()
+            UserDefaults.standard.set(watchedIds, forKey: "\(self.currentType.rawValue)Watchedlist")
+            completion?(watchedIds)
         }
+        return UserDefaults.standard.object(forKey: "\(currentType.rawValue)Watchedlist") as? [String] ?? [String]()
     }
     
     /**
@@ -104,18 +104,21 @@ open class WatchedlistManager {
      
      - Important: Local watchedlist may be more up-to-date than Trakt version but local version will be replaced with Trakt version regardless.
      
-     - Parameter completion: Optional completion handler called when progress has been retrieved. May never be called if user hasn't authenticated with Trakt.
+     - Parameter completion: Optional completion handler called when progress has been retrieved from trakt. May never be called if user hasn't authenticated with Trakt.
+     
+     - Returns: Locally stored progress (may be out of date if user has authenticated with trakt).
      */
-    open func syncTraktProgress(completion: (() -> Void)? = nil) {
+    @discardableResult open func getProgress(completion: (([String: Float]) -> Void)? = nil) -> [String: Float] {
         TraktManager.shared.getPlaybackProgress(forMediaOfType: currentType) { [unowned self] (dict, error) in
             guard error == nil else {return}
             UserDefaults.standard.set(dict, forKey: "\(self.currentType.rawValue)VideoProgress")
-            completion?()
+            completion?(dict)
         }
+        return UserDefaults.standard.object(forKey: "\(currentType.rawValue)VideoProgress") as? [String: Float] ?? [String: Float]()
     }
     
     /**
-     Gets watched progress for movie or epsiode.
+     Retrieves watched progress for movie or epsiode.
      
      - Parameter id: The imdbId for movie or tvdbId for episode.
      
@@ -128,5 +131,35 @@ open class WatchedlistManager {
         }
         return 0.0
     }
+    
+    /**
+     Retrieves media that the user is currently watching.
+     
+     - Parameter completion: Optional completion handler called when on deck media has been retrieved from trakt. May never be called if user hasn't authenticated with Trakt.
+     
+     - Returns: Locally stored on deck media id's (may be out of date if user has authenticated with trakt).
+     */
+    @discardableResult open func getOnDeck(completion: (([String]) -> Void)? = nil) -> [String] {
+        let group = DispatchGroup()
+        var watched:  [String] = []
+        var progress: [String] = []
+        
+        group.enter()
+        watched = getWatched() { updated in
+            watched = updated
+            group.leave()
+        }
+        
+        group.enter()
+        progress = Array(getProgress() { updated in
+            progress = Array(updated.keys)
+            group.leave()
+        }.keys)
+        
+        group.notify(queue: .main) { 
+            completion?(Array(Set(progress).subtracting(watched)))
+        }
+        
+        return Array(Set(progress).subtracting(watched))
+    }
 }
-

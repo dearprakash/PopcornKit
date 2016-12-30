@@ -23,7 +23,7 @@ public func loadAnime(
     genre: AnimeManager.Genres = .all,
     searchTerm: String? = nil,
     orderBy order: AnimeManager.Orders = .descending,
-    completion: @escaping (_ shows: [Show]?, _ error: NSError?) -> Void) {
+    completion: @escaping ([Show]?, NSError?) -> Void) {
     AnimeManager.shared.load(
         page,
         filterBy: filter,
@@ -40,7 +40,7 @@ public func loadAnime(
  
  - Parameter completion:    Completion handler for the request. Returns show upon success, error upon failure.
  */
-public func getAnimeInfo(_ id: String, completion: @escaping (_ show: Show?, _ error: NSError?) -> Void) {
+public func getAnimeInfo(_ id: String, completion: @escaping (Show?, NSError?) -> Void) {
     AnimeManager.shared.getInfo(id, completion: completion)
 }
 
@@ -61,7 +61,7 @@ public func loadShows(
     genre: ShowManager.Genres = .all,
     searchTerm: String? = nil,
     orderBy order: ShowManager.Orders = .descending,
-    completion: @escaping (_ shows: [Show]?, _ error: NSError?) -> Void) {
+    completion: @escaping ([Show]?, NSError?) -> Void) {
     ShowManager.shared.load(
         page,
         filterBy: filter,
@@ -78,8 +78,19 @@ public func loadShows(
  
  - Parameter completion:    Completion handler for the request. Returns show upon success, error upon failure.
  */
-public func getShowInfo(_ imdbId: String, completion: @escaping (_ show: Show?, _ error: NSError?) -> Void) {
+public func getShowInfo(_ imdbId: String, completion: @escaping (Show?, NSError?) -> Void) {
     ShowManager.shared.getInfo(imdbId, completion: completion)
+}
+
+/**
+ Get more episode information.
+ 
+ - Parameter tvdbId:        The tvdb identification code of the episode.
+ 
+ - Parameter completion:    Completion handler for the request. Returns episode upon success, error upon failure.
+ */
+public func getEpisodeInfo(_ tvdbId: Int, completion: @escaping (Episode?, NSError?) -> Void) {
+    TraktManager.shared.getEpisodeInfo(forTvdb: tvdbId, completion: completion)
 }
 
 
@@ -101,7 +112,7 @@ public func loadMovies(
     genre: MovieManager.Genres = .all,
     searchTerm: String? = nil,
     orderBy order: MovieManager.Orders = .descending,
-    completion: @escaping (_ movies: [Movie]?, _ error: NSError?) -> Void) {
+    completion: @escaping ([Movie]?, NSError?) -> Void) {
     MovieManager.shared.load(
         page,
         filterBy: filter,
@@ -118,7 +129,7 @@ public func loadMovies(
  
  - Parameter completion:    Completion handler for the request. Returns movie upon success, error upon failure.
  */
-public func getMovieInfo(_ imdbId: String, completion: @escaping (_ movie: Movie?, _ error: NSError?) -> Void) {
+public func getMovieInfo(_ imdbId: String, completion: @escaping (Movie?, NSError?) -> Void) {
     MovieManager.shared.getInfo(imdbId, completion: completion)
 }
 
@@ -129,7 +140,7 @@ public func getMovieInfo(_ imdbId: String, completion: @escaping (_ movie: Movie
  
  - Parameter completion:    Completion handler for the request. Returns downloaded torrent url upon success, error upon failure.
  */
-public func downloadTorrentFile(_ path: String, completion: @escaping (_ url: String?, _ error: NSError?) -> Void) {
+public func downloadTorrentFile(_ path: String, completion: @escaping (String?, NSError?) -> Void) {
     var finalPath: URL!
     Alamofire.download(path) { (temporaryURL, response) -> (destinationURL: URL, options: DownloadRequest.DownloadOptions) in
         finalPath = URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent(response.suggestedFilename!)
@@ -155,7 +166,7 @@ public func downloadSubtitleFile(
     fileName suggestedName: String? = nil,
     downloadDirectory directory: URL = URL(fileURLWithPath: NSTemporaryDirectory()),
     convertToVTT: Bool = false,
-    completion: @escaping (_ subtitlePath: URL?, _ error: NSError?) -> Void) {
+    completion: @escaping (URL?, NSError?) -> Void) {
     var downloadDirectory: URL!
     var zippedFilePath: URL!
     var fileName: String!

@@ -406,14 +406,11 @@ open class TraktManager: NetworkManager {
     
     /// Downloads users latest watchlist and watchedlist from Trakt.
     open func syncUserData() {
-        WatchedlistManager.movie.syncTraktProgress()
+        WatchedlistManager.movie.getProgress()
         WatchedlistManager.movie.getWatched()
         WatchlistManager<Movie>.movie.getWatchlist()
-        WatchedlistManager.episode.syncTraktProgress()
+        WatchedlistManager.episode.getProgress()
         WatchedlistManager.episode.getWatched()
-        WatchlistManager<Episode>.episode.getWatchlist()
-        WatchedlistManager.show.syncTraktProgress()
-        WatchedlistManager.show.getWatched()
         WatchlistManager<Show>.show.getWatchlist()
     }
     
@@ -432,6 +429,20 @@ open class TraktManager: NetworkManager {
                 completion(responseObject?[type]["ids"]["tmdb"].int, nil)
             }
             
+        }
+    }
+    
+    /**
+     Requests episode info from tvdb.
+     
+     - Parameter id:            The tvdb identification code of the episode.
+     
+     - Parameter completion:    Completion handler for the request. Returns episode upon success, error upon failure.
+     */
+    open func getEpisodeInfo(forTvdb id: Int, completion: @escaping (Episode?, NSError?) -> Void) {
+        self.manager.request(Trakt.base + Trakt.search + Trakt.tvdb + "/\(id)", parameters:Trakt.extended, headers: Trakt.Headers.Default).validate().responseJSON { (response) in
+            guard let value = response.result.value else { completion(nil, response.result.error as NSError?); return }
+            completion(Mapper<Episode>(context: TraktContext()).map(JSONObject: value), nil)
         }
     }
 }

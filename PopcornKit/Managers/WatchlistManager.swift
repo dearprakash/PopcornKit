@@ -3,7 +3,7 @@
 import Foundation
 import ObjectMapper
 
-struct Static {
+private struct Static {
     static var episodeInstance: WatchlistManager<Episode>? = nil
     static var movieInstance: WatchlistManager<Movie>? = nil
     static var showInstance: WatchlistManager<Show>? = nil
@@ -61,6 +61,7 @@ open class WatchlistManager<N: Media> {
     open func toggle(_ media: N) {
         isAdded(media) ? remove(media): add(media)
     }
+    
     /**
      Adds media to users watchlist and syncs with Trakt if available.
      
@@ -72,6 +73,7 @@ open class WatchlistManager<N: Media> {
         array.append(Mapper<N>().toJSON(media))
         UserDefaults.standard.set(array, forKey: "\(currentType.rawValue)Watchlist")
     }
+    
     /**
      Removes media from users watchlist and syncs with Trakt if available.
      
@@ -86,6 +88,7 @@ open class WatchlistManager<N: Media> {
             UserDefaults.standard.set(array, forKey: "\(currentType.rawValue)Watchlist")
         }
     }
+    
     /**
      Checks media is in the watchlist.
      
@@ -99,12 +102,13 @@ open class WatchlistManager<N: Media> {
         }
         return false
     }
+    
     /**
      Gets watchlist locally first and then from Trakt if available.
      
      - Parameter completion: If Trakt is available, completion will be called with a more up-to-date watchlist that will replace the locally stored one and should be reloaded for the user.
      
-     - Returns: Locally stored watchlist (may be out of date if user has authenticated with trakt). Will be `nil` if users watchlist is empty.
+     - Returns: Locally stored watchlist (may be out of date if user has authenticated with trakt).
      */
     @discardableResult open func getWatchlist(_ completion: (([N]) -> Void)? = nil) -> [N] {
         let array = UserDefaults.standard.object(forKey: "\(currentType.rawValue)Watchlist") as? jsonArray ?? jsonArray()
