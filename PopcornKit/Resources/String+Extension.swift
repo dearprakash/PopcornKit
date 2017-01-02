@@ -64,3 +64,12 @@ public let Trackers = [
     "udp://tracker.leechers-paradise.org:6969",
     "udp://exodus.desync.com:6969"
 ]
+
+extension Dictionary {
+    init(_ seq: Zip2Sequence<[Key], [Value]>) {
+        self.init()
+        for (k,v) in seq {
+            self[k] = v
+        }
+    }
+}

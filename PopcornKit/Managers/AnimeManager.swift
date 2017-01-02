@@ -83,7 +83,7 @@ open class AnimeManager: NetworkManager {
      
      - Parameter page:       The page number to load.
      - Parameter filterBy:   Sort the response by Popularity, Year, Date Rating, Alphabet or Trending.
-     - Paramter genre:       Only return anime that match the provided genre.
+     - Parameter genre:      Only return anime that match the provided genre.
      - Parameter searchTerm: Only return animes that match the provided string.
      - Parameter orderBy:    Ascending or descending.
      

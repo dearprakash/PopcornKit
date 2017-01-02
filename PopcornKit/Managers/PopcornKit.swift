@@ -11,7 +11,7 @@ import Alamofire
  
  - Parameter page:       The page number to load.
  - Parameter filterBy:   Sort the response by Popularity, Year, Date Rating, Alphabet or Trending.
- - Paramter genre:       Only return anime that match the provided genre.
+ - Parameter genre:      Only return anime that match the provided genre.
  - Parameter searchTerm: Only return animes that match the provided string.
  - Parameter orderBy:    Ascending or descending.
  
@@ -49,7 +49,7 @@ public func getAnimeInfo(_ id: String, completion: @escaping (Show?, NSError?) -
  
  - Parameter page:       The page number to load.
  - Parameter filterBy:   Sort the response by Popularity, Year, Date Rating, Alphabet or Trending.
- - Paramter genre:       Only return shows that match the provided genre.
+ - Parameter genre:      Only return shows that match the provided genre.
  - Parameter searchTerm: Only return shows that match the provided string.
  - Parameter orderBy:    Ascending or descending.
  
@@ -98,9 +98,8 @@ public func getEpisodeInfo(_ tvdbId: Int, completion: @escaping (Episode?, NSErr
  Load Movies from API.
  
  - Parameter page:       The page number to load.
- - Parameter limit:      The number of movies to be recieved.
  - Parameter filterBy:   Sort the response by Popularity, Year, Date Rating, Alphabet or Trending.
- - Paramter genre:       Only return movies that match the provided genre.
+ - Parameter genre:      Only return movies that match the provided genre.
  - Parameter searchTerm: Only return movies that match the provided string.
  - Parameter orderBy:    Ascending or descending.
  

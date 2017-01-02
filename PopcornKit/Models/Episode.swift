@@ -22,6 +22,9 @@ public struct Episode: Media, Equatable {
     /// The tvdb id of the episode.
     public let id: String
     
+    /// IMDB id of the episode. This will be `nil` unless explicitly set by calling `getEpisodeMetadata:showId:episodeNumber:seasonNumber:completion:` on `TraktManager` or the episode was loaded from Trakt.
+    public var imdbId: String?
+    
     /// TMDB id of the episode. This will be `nil` unless explicitly set by calling `getTMDBId:forImdbId:completion:` on `TraktManager` or the episode was loaded from Trakt.
     public var tmdbId: Int?
     
@@ -87,6 +90,7 @@ public struct Episode: Media, Equatable {
             torrents.sort(by: <)
         }
         self.tmdbId = try? map.value("ids.tmdb")
+        self.imdbId = try? map.value("ids.imdb")
         self.show = try? map.value("show") // Will only not be `nil` if object is mapped from JSON array, otherwise this is set in `Show` struct.
         self.firstAirDate =  try map.value("first_aired", using: DateTransform())
         self.summary = ((try? map.value("overview")) ?? "No summary available.").cleaned
@@ -106,6 +110,7 @@ public struct Episode: Media, Equatable {
         case .toJSON:
             id >>> (map["tvdb_id"], StringTransform())
             tmdbId >>> map["ids.tmdb"]
+            imdbId >>> map["ids.imdb"]
             firstAirDate >>> (map["first_aired"], DateTransform())
             summary >>> map["overview"]
             season >>> map["season"]

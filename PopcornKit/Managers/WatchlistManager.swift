@@ -18,7 +18,7 @@ open class WatchlistManager<N: Media> {
     
     /// Creates new instance of WatchlistManager class with type of Episodes.
     public class var episode: WatchlistManager<Episode> {
-        DispatchQueue.once(token: "Episode") { 
+        DispatchQueue.once(token: "EpisodeWatchlist") {
             Static.episodeInstance = WatchlistManager<Episode>()
         }
         return Static.episodeInstance!
@@ -26,7 +26,7 @@ open class WatchlistManager<N: Media> {
     
     /// Creates new instance of WatchlistManager class with type of Shows.
     public class var show: WatchlistManager<Show> {
-        DispatchQueue.once(token: "Show") {
+        DispatchQueue.once(token: "ShowWatchlist") {
             Static.showInstance = WatchlistManager<Show>()
         }
         return Static.showInstance!
@@ -34,7 +34,7 @@ open class WatchlistManager<N: Media> {
     
     /// Creates new instance of WatchlistManager class with type of Movies.
     public class var movie: WatchlistManager<Movie> {
-        DispatchQueue.once(token: "Movie") {
+        DispatchQueue.once(token: "MovieWatchlist") {
             Static.movieInstance = WatchlistManager<Movie>()
         }
         return Static.movieInstance!

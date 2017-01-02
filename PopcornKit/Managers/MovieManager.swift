@@ -73,9 +73,8 @@ open class MovieManager: NetworkManager {
      Load Movies from API.
      
      - Parameter page:       The page number to load.
-     - Parameter limit:      The number of movies to be recieved.
      - Parameter filterBy:   Sort the response by Popularity, Year, Date Rating, Alphabet or Trending.
-     - Paramter genre:       Only return movies that match the provided genre.
+     - Parameter genre:      Only return movies that match the provided genre.
      - Parameter searchTerm: Only return movies that match the provided string.
      - Parameter orderBy:    Ascending or descending.
      

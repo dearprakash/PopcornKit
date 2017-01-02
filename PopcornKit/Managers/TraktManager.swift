@@ -59,15 +59,12 @@ open class TraktManager: NetworkManager {
      - Parameter episodeNumber: The number of the episode in relation to its current season.
      - Parameter seasonNumber:  The season of which the episode is in.
      
-     - Parameter completion:    The completion handler for the request containing an optional tvdbId, optional imdbId and an optional error.
+     - Parameter completion:    The completion handler for the request containing an optional episode and an optional error.
      */
-    open func getEpisodeMetadata(_ showId: String, episodeNumber: Int, seasonNumber: Int, completion: @escaping (Int?, String?, NSError?) -> Void) {
-        self.manager.request(Trakt.base + Trakt.shows +  "/\(showId)" + Trakt.seasons + "/\(seasonNumber)" + Trakt.episodes + "/\(episodeNumber)", headers: Trakt.Headers.Default).validate().responseJSON { response in
-            guard let value = response.result.value else { completion(nil, nil, response.result.error as NSError?); return }
-            let responseObject = JSON(value)
-            let imdbId = responseObject["ids"]["imdb"].string
-            let tvdbId = responseObject["ids"]["tvdb"].int
-            completion(tvdbId, imdbId, nil)
+    open func getEpisodeMetadata(_ showId: String, episodeNumber: Int, seasonNumber: Int, completion: @escaping (Episode?, NSError?) -> Void) {
+        self.manager.request(Trakt.base + Trakt.shows + "/\(showId)" + Trakt.seasons + "/\(seasonNumber)" + Trakt.episodes + "/\(episodeNumber)", parameters: Trakt.extended, headers: Trakt.Headers.Default).validate().responseJSON { response in
+            guard let value = response.result.value else { completion(nil, response.result.error as NSError?); return }
+            completion(Mapper<Episode>(context: TraktContext()).map(JSONObject: value), nil)
         }
     }
     
@@ -76,45 +73,46 @@ open class TraktManager: NetworkManager {
      
      - Parameter forMediaOfType:    The type of the item (either movie or show).
      
-     - Parameter completion:        The completion handler for the request containing an array of either imdbIds or tvdbIds depending on the type selected and an optional error.
+     - Parameter completion:        The completion handler for the request containing an array of media objects and an optional error.
      */
-    open func getWatched(forMediaOfType type: Trakt.MediaType, completion:@escaping ([String], NSError?) -> Void) {
+    open func getWatched<T: Media>(forMediaOfType type: T.Type, completion:@escaping ([T], NSError?) -> Void) {
         guard var credential = OAuthCredential(identifier: "trakt") else { return }
         DispatchQueue.global(qos: .userInitiated).async {
             if credential.expired {
                 do {
                     credential = try OAuthCredential(Trakt.base + Trakt.auth + Trakt.token, refreshToken: credential.refreshToken!, clientID: Trakt.apiKey, clientSecret: Trakt.apiSecret, useBasicAuthentication: false)
                 } catch let error as NSError {
-                    DispatchQueue.main.async(execute: { completion([String](), error) })
+                    DispatchQueue.main.async(execute: { completion([T](), error) })
                 }
             }
+            let type = type is Movie.Type ? Trakt.movies : Trakt.episodes
             let queue = DispatchQueue(label: "com.popcorntimetv.popcornkit.response.queue", attributes: .concurrent)
-            self.manager.request(Trakt.base + Trakt.sync + Trakt.watched + "/\(type.rawValue)", headers: Trakt.Headers.Authorization(credential.accessToken)).validate().responseJSON(queue: queue, options: .allowFragments, completionHandler: { response in
-                guard let value = response.result.value else { completion([String](), response.result.error as NSError?); return}
+            self.manager.request(Trakt.base + Trakt.sync + Trakt.history + type, parameters: ["extended": "full", "limit": Int.max], headers: Trakt.Headers.Authorization(credential.accessToken)).validate().responseJSON(queue: queue, options: .allowFragments, completionHandler: { response in
+                guard let value = response.result.value else { completion([T](), response.result.error as NSError?); return }
                 let responseObject = JSON(value)
-                var ids = [String]()
+                var watchedlist = [T]()
                 let group = DispatchGroup()
                 for (_, item) in responseObject {
-                    if type == .movies, let id = item["movie"]["ids"]["imdb"].string {
-                        ids.append(id)
+                    guard let type = item["type"].string,
+                        let media = Mapper<T>(context: TraktContext()).map(JSONObject: item[type].dictionaryObject)
+                        else { continue }
+                    group.enter()
+                    guard var episode = media as? Episode, let show = Mapper<Show>(context: TraktContext()).map(JSONObject: item["show"].dictionaryObject) else {
+                        watchedlist.append(media)
+                        group.leave()
                         continue
                     }
-                    var tvdbIds = [String]()
-                    guard let showImdbId = item["show"]["ids"]["imdb"].string else { continue }
-                    for (_, season) in item["seasons"] {
-                        guard let seasonNumber = season["number"].int else { continue }
-                        for (_, episode) in season["episodes"] {
-                            guard let episodeNumber = episode["number"].int else { continue }
-                            group.enter()
-                            self.getEpisodeMetadata(showImdbId, episodeNumber: episodeNumber, seasonNumber: seasonNumber, completion: { (tvdbId, _, _) in
-                                if let tvdbId = tvdbId { tvdbIds.append(String(tvdbId)) }
-                                group.leave()
-                            })
-                        }
-                    }
-                    ids += tvdbIds
+                    episode.show = show
+                    TMDBManager.shared.getEpisodeScreenshots(forShowWithImdbId: episode.show.id, orTMDBId: episode.show.tmdbId, season: episode.season, episode: episode.episode, completion: { (tmdb, image, _) in
+                        if let id = tmdb { episode.show.tmdbId = id }
+                        if let image = image { episode.largeBackgroundImage = image }
+                        watchedlist.append(episode as! T)
+                        group.leave()
+                    })
                 }
-                group.notify(queue: .main, execute: { completion(ids, nil) })
+                group.notify(queue: .main, execute: {
+                    completion(watchedlist, nil)
+                })
             })
         }
     }
@@ -126,29 +124,57 @@ open class TraktManager: NetworkManager {
      
      - Parameter completion: The completion handler for the request containing a dictionary of either imdbIds or tvdbIds depending on the type selected as keys and the users corrisponding watched progress as values and an optional error. Eg. ["tt1431045": 0.5] means you have watched half of Deadpool.
      */
-    open func getPlaybackProgress(forMediaOfType type: Trakt.MediaType, completion: @escaping ([String: Float], NSError?) -> Void) {
+    open func getPlaybackProgress<T: Media>(forMediaOfType type: T.Type, completion:@escaping ([T: Float], NSError?) -> Void) {
         guard var credential = OAuthCredential(identifier: "trakt") else {return}
         DispatchQueue.global(qos: .userInitiated).async {
             if credential.expired {
                 do {
                     credential = try OAuthCredential(Trakt.base + Trakt.auth + Trakt.token, refreshToken: credential.refreshToken!, clientID: Trakt.apiKey, clientSecret: Trakt.apiSecret, useBasicAuthentication: false)
                 } catch let error as NSError {
-                    DispatchQueue.main.async(execute: { completion([String: Float](), error) })
+                    DispatchQueue.main.async(execute: { completion([T: Float](), error) })
                 }
             }
-            self.manager.request(Trakt.base + Trakt.sync + Trakt.playback + "/\(type.rawValue)", headers: Trakt.Headers.Authorization(credential.accessToken)).validate().responseJSON { response in
-                guard let value = response.result.value else { completion([String: Float](), response.result.error as NSError?); return }
+            let mediaType: String
+            switch type {
+            case is Movie.Type:
+                mediaType = Trakt.movies
+            case is Show.Type:
+                mediaType = Trakt.shows
+            case is Episode.Type:
+                mediaType = Trakt.episodes
+            default:
+                mediaType = ""
+            }
+            let queue = DispatchQueue(label: "com.popcorntimetv.popcornkit.response.queue", attributes: .concurrent)
+            self.manager.request(Trakt.base + Trakt.sync + Trakt.playback + mediaType, parameters: Trakt.extended, headers: Trakt.Headers.Authorization(credential.accessToken)).validate().responseJSON(queue: queue, options: .allowFragments, completionHandler: { response in
+                guard let value = response.result.value else { completion([T: Float](), response.result.error as NSError?); return }
                 let responseObject = JSON(value)
-                var progressDict = [String: Float]()
+                let group = DispatchGroup()
+                var progressDict = [T: Float]()
                 for (_, item) in responseObject {
-                    var imdbId = item["movie"]["ids"]["imdb"].string
-                    if let id = item["episode"]["ids"]["tvdb"].int, imdbId == nil { imdbId = String(id) }
-                    if let imdbId = imdbId, let progress = item["progress"].float {
-                        progressDict[imdbId] = progress/100.0
+                    guard let type = item["type"].string,
+                        let progress = item["progress"].float,
+                        let media = Mapper<T>(context: TraktContext()).map(JSONObject: item[type].dictionaryObject)
+                        else { continue }
+                    group.enter()
+                    guard var episode = media as? Episode, let show = Mapper<Show>(context: TraktContext()).map(JSONObject: item["show"].dictionaryObject) else {
+                        let completion: (Media?, NSError?) -> Void = { (media, _) in
+                            if let media = media { progressDict[media as! T] = progress/100.0 }
+                            group.leave()
+                        }
+                        media is Movie ? MovieManager.shared.getInfo(media.id, completion: completion) : ShowManager.shared.getInfo(media.id, completion: completion)
+                        continue
                     }
+                    episode.show = show
+                    TMDBManager.shared.getEpisodeScreenshots(forShowWithImdbId: episode.show.id, orTMDBId: episode.show.tmdbId, season: episode.season, episode: episode.episode, completion: { (tmdb, image, _) in
+                        if let id = tmdb { episode.show.tmdbId = id }
+                        if let image = image { episode.largeBackgroundImage = image }
+                        progressDict[episode as! T] = progress/100.0
+                        group.leave()
+                    })
                 }
-                completion(progressDict, nil)
-            }
+                group.notify(queue: .main, execute: { completion(progressDict, nil) })
+            })
         }
     }
     
@@ -251,29 +277,35 @@ open class TraktManager: NetworkManager {
             default:
                 mediaType = ""
             }
-            self.manager.request(Trakt.base + Trakt.sync + Trakt.watchlist + mediaType, parameters: Trakt.extended, headers: Trakt.Headers.Authorization(credential.accessToken)).validate().responseJSON { response in
+            let queue = DispatchQueue(label: "com.popcorntimetv.popcornkit.response.queue", attributes: .concurrent)
+            self.manager.request(Trakt.base + Trakt.sync + Trakt.watchlist + mediaType, parameters: Trakt.extended, headers: Trakt.Headers.Authorization(credential.accessToken)).validate().responseJSON(queue: queue, options: .allowFragments, completionHandler: { response in
                 guard let value = response.result.value else { completion([T](), response.result.error as NSError?); return }
                 let responseObject = JSON(value)
                 var watchlist = [T]()
                 let group = DispatchGroup()
                 for (_, item) in responseObject {
-                    guard let type = item["type"].string else { continue }
-                    if let media = Mapper<T>(context: TraktContext()).map(JSONObject: item[type].dictionaryObject) {
-                        guard var episode = media as? Episode, let show = Mapper<Show>(context: TraktContext()).map(JSONObject: item["show"].dictionaryObject) else {
-                            group.enter()
-                            let completion: (Media?, NSError?) -> Void = { (media, _) in
-                                if let media = media { watchlist.append(media as! T) }
-                                group.leave()
-                            }
-                            media is Movie ?  MovieManager.shared.getInfo(media.id, completion: completion) : ShowManager.shared.getInfo(media.id, completion: completion)
-                            continue
+                    guard let type = item["type"].string,
+                        let media = Mapper<T>(context: TraktContext()).map(JSONObject: item[type].dictionaryObject)
+                        else { continue }
+                    group.enter()
+                    guard var episode = media as? Episode, let show = Mapper<Show>(context: TraktContext()).map(JSONObject: item["show"].dictionaryObject) else {
+                        let completion: (Media?, NSError?) -> Void = { (media, _) in
+                            if let media = media { watchlist.append(media as! T) }
+                            group.leave()
                         }
-                        episode.show = show
-                        watchlist.append(episode as! T)
+                        media is Movie ?  MovieManager.shared.getInfo(media.id, completion: completion) : ShowManager.shared.getInfo(media.id, completion: completion)
+                        continue
                     }
+                    episode.show = show
+                    TMDBManager.shared.getEpisodeScreenshots(forShowWithImdbId: episode.show.id, orTMDBId: episode.show.tmdbId, season: episode.season, episode: episode.episode, completion: { (tmdb, image, _) in
+                        if let id = tmdb { episode.show.tmdbId = id }
+                        if let image = image { episode.largeBackgroundImage = image }
+                        watchlist.append(episode as! T)
+                        group.leave()
+                    })
                 }
                 group.notify(queue: .main, execute: { completion(watchlist, nil) })
-            }
+            })
         }
     }
     
@@ -406,11 +438,11 @@ open class TraktManager: NetworkManager {
     
     /// Downloads users latest watchlist and watchedlist from Trakt.
     open func syncUserData() {
-        WatchedlistManager.movie.getProgress()
-        WatchedlistManager.movie.getWatched()
+        WatchedlistManager<Movie>.movie.getProgress()
+        WatchedlistManager<Movie>.movie.getWatched()
         WatchlistManager<Movie>.movie.getWatchlist()
-        WatchedlistManager.episode.getProgress()
-        WatchedlistManager.episode.getWatched()
+        WatchedlistManager<Episode>.episode.getProgress()
+        WatchedlistManager<Episode>.episode.getWatched()
         WatchlistManager<Show>.show.getWatchlist()
     }
     
@@ -442,7 +474,12 @@ open class TraktManager: NetworkManager {
     open func getEpisodeInfo(forTvdb id: Int, completion: @escaping (Episode?, NSError?) -> Void) {
         self.manager.request(Trakt.base + Trakt.search + Trakt.tvdb + "/\(id)", parameters:Trakt.extended, headers: Trakt.Headers.Default).validate().responseJSON { (response) in
             guard let value = response.result.value else { completion(nil, response.result.error as NSError?); return }
-            completion(Mapper<Episode>(context: TraktContext()).map(JSONObject: value), nil)
+            let responseObject = JSON(value)
+            
+            var episode = Mapper<Episode>(context: TraktContext()).map(JSONObject: responseObject["episode"].dictionaryObject)
+            episode?.show = Mapper<Show>(context: TraktContext()).map(JSONObject: responseObject["show"].dictionaryObject)
+            
+            completion(episode, nil)
         }
     }
 }
