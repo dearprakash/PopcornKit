@@ -103,16 +103,10 @@ open class TraktManager: NetworkManager {
                         continue
                     }
                     episode.show = show
-                    TMDBManager.shared.getEpisodeScreenshots(forShowWithImdbId: episode.show.id, orTMDBId: episode.show.tmdbId, season: episode.season, episode: episode.episode, completion: { (tmdb, image, _) in
-                        if let id = tmdb { episode.show.tmdbId = id }
-                        if let image = image { episode.largeBackgroundImage = image }
-                        watchedlist.append(episode as! T)
-                        group.leave()
-                    })
+                    watchedlist.append(episode as! T)
+                    group.leave()
                 }
-                group.notify(queue: .main, execute: {
-                    completion(watchedlist, nil)
-                })
+                group.notify(queue: .main, execute: { completion(watchedlist, nil) })
             })
         }
     }
@@ -166,12 +160,8 @@ open class TraktManager: NetworkManager {
                         continue
                     }
                     episode.show = show
-                    TMDBManager.shared.getEpisodeScreenshots(forShowWithImdbId: episode.show.id, orTMDBId: episode.show.tmdbId, season: episode.season, episode: episode.episode, completion: { (tmdb, image, _) in
-                        if let id = tmdb { episode.show.tmdbId = id }
-                        if let image = image { episode.largeBackgroundImage = image }
-                        progressDict[episode as! T] = progress/100.0
-                        group.leave()
-                    })
+                    progressDict[episode as! T] = progress/100.0
+                    group.leave()
                 }
                 group.notify(queue: .main, execute: { completion(progressDict, nil) })
             })
@@ -252,7 +242,7 @@ open class TraktManager: NetworkManager {
     /**
      Retrieves users watchlist.
      
-     - Parameter forMediaOfType: The type struct of the item eg. `Movie` or `Show` or `Episode`.
+     - Parameter forMediaOfType: The type struct of the item eg. `Movie` or `Show`. Episodes not supported
      
      - Parameter completion: The completion handler for the request containing an array of media that the user has added to their watchlist and an optional error.
      */
@@ -272,8 +262,6 @@ open class TraktManager: NetworkManager {
                 mediaType = Trakt.movies
             case is Show.Type:
                 mediaType = Trakt.shows
-            case is Episode.Type:
-                mediaType = Trakt.episodes
             default:
                 mediaType = ""
             }
@@ -288,21 +276,11 @@ open class TraktManager: NetworkManager {
                         let media = Mapper<T>(context: TraktContext()).map(JSONObject: item[type].dictionaryObject)
                         else { continue }
                     group.enter()
-                    guard var episode = media as? Episode, let show = Mapper<Show>(context: TraktContext()).map(JSONObject: item["show"].dictionaryObject) else {
-                        let completion: (Media?, NSError?) -> Void = { (media, _) in
-                            if let media = media { watchlist.append(media as! T) }
-                            group.leave()
-                        }
-                        media is Movie ?  MovieManager.shared.getInfo(media.id, completion: completion) : ShowManager.shared.getInfo(media.id, completion: completion)
-                        continue
-                    }
-                    episode.show = show
-                    TMDBManager.shared.getEpisodeScreenshots(forShowWithImdbId: episode.show.id, orTMDBId: episode.show.tmdbId, season: episode.season, episode: episode.episode, completion: { (tmdb, image, _) in
-                        if let id = tmdb { episode.show.tmdbId = id }
-                        if let image = image { episode.largeBackgroundImage = image }
-                        watchlist.append(episode as! T)
+                    let completion: (Media?, NSError?) -> Void = { (media, _) in
+                        if let media = media { watchlist.append(media as! T) }
                         group.leave()
-                    })
+                    }
+                    media is Movie ?  MovieManager.shared.getInfo(media.id, completion: completion) : ShowManager.shared.getInfo(media.id, completion: completion)
                 }
                 group.notify(queue: .main, execute: { completion(watchlist, nil) })
             })
@@ -474,12 +452,17 @@ open class TraktManager: NetworkManager {
     open func getEpisodeInfo(forTvdb id: Int, completion: @escaping (Episode?, NSError?) -> Void) {
         self.manager.request(Trakt.base + Trakt.search + Trakt.tvdb + "/\(id)", parameters:Trakt.extended, headers: Trakt.Headers.Default).validate().responseJSON { (response) in
             guard let value = response.result.value else { completion(nil, response.result.error as NSError?); return }
-            let responseObject = JSON(value)
+            let responseObject = JSON(value)[0]
             
             var episode = Mapper<Episode>(context: TraktContext()).map(JSONObject: responseObject["episode"].dictionaryObject)
             episode?.show = Mapper<Show>(context: TraktContext()).map(JSONObject: responseObject["show"].dictionaryObject)
             
-            completion(episode, nil)
+            TMDBManager.shared.getEpisodeScreenshots(forShowWithImdbId: episode?.show.id, orTMDBId: episode?.show.tmdbId, season: episode?.season ?? -1, episode: episode?.episode ?? -1) { (tmdb, image, error) in
+                if let tmdb = tmdb { episode?.show.tmdbId = tmdb }
+                if let image = image { episode?.largeBackgroundImage = image }
+                
+                completion(episode, error)
+            }
         }
     }
 }

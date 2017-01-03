@@ -1,4 +1,5 @@
 
+
 import Foundation
 import ObjectMapper
 
@@ -55,25 +56,22 @@ open class WatchedlistManager<N: Media & Hashable> {
     /**
      Toggles a users watched status on the passed in media id and syncs with Trakt if available.
      
-     - Parameter media: The media to add or remove.
+     - Parameter id: The imdbId for movie or tvdbId for episode.
      */
-    open func toggle(_ media: N) {
-        isAdded(media) ? remove(media): add(media)
+    open func toggle(_ id: String) {
+        isAdded(id) ? remove(id): add(id)
     }
     
     /**
      Adds movie or episode to watchedlist and syncs with Trakt if available.
      
-     - Parameter media: The media to add.
+     - Parameter id: The imdbId or tvdbId of the movie or episode.
      */
-    open func add(_ media: N) {
-        TraktManager.shared.scrobble(media.id, progress: 1, type: currentType, status: .finished)
+    open func add(_ id: String) {
+        TraktManager.shared.scrobble(id, progress: 1, type: currentType, status: .finished)
         var array = UserDefaults.standard.object(forKey: "\(currentType.rawValue)Watchedlist") as? [String] ?? [String]()
-        var raw = UserDefaults.standard.object(forKey: "\(currentType.rawValue)WatchedlistRawMedia") as? jsonArray ?? jsonArray()
-        raw.append(Mapper<N>().toJSON(media))
-        array.append(media.id)
+        !array.contains(id) ? array.append(id) : ()
         UserDefaults.standard.set(array, forKey: "\(currentType.rawValue)Watchedlist")
-        UserDefaults.standard.set(raw, forKey: "\(currentType.rawValue)WatchedlistRawMedia")
     }
     
     /**
@@ -81,16 +79,12 @@ open class WatchedlistManager<N: Media & Hashable> {
      
      - Parameter id: The imdbId for movie or tvdbId for episode.
      */
-    open func remove(_ media: N) {
-        TraktManager.shared.remove(media.id, fromWatchedlistOfType: currentType)
+    open func remove(_ id: String) {
+        TraktManager.shared.remove(id, fromWatchedlistOfType: currentType)
         if var array = UserDefaults.standard.object(forKey: "\(currentType.rawValue)Watchedlist") as? [String],
-            var raw = UserDefaults.standard.object(forKey: "\(currentType.rawValue)WatchedlistRawMedia") as? jsonArray,
-            let map = Mapper<N>().mapArray(JSONArray: raw),
-            let index = map.index(where: { $0.id == media.id }) {
+            let index = array.index(of: id) {
             array.remove(at: index)
-            raw.remove(at: index)
             UserDefaults.standard.set(array, forKey: "\(currentType.rawValue)Watchedlist")
-            UserDefaults.standard.set(raw, forKey: "\(currentType.rawValue)WatchedlistRawMedia")
         }
     }
     
@@ -101,9 +95,9 @@ open class WatchedlistManager<N: Media & Hashable> {
      
      - Returns: Boolean indicating if movie or episode is in watchedlist.
      */
-    open func isAdded(_ media: N) -> Bool {
+    open func isAdded(_ id: String) -> Bool {
         if let array = UserDefaults.standard.object(forKey: "\(currentType.rawValue)Watchedlist") as? [String] {
-            return array.contains(where: {$0 == media.id})
+            return array.contains(id)
         }
         return false
     }
@@ -115,43 +109,35 @@ open class WatchedlistManager<N: Media & Hashable> {
      
      - Returns: Locally stored watchedlist imdbId's (may be out of date if user has authenticated with trakt).
      */
-    @discardableResult open func getWatched(completion: (([String]) -> Void)? = nil) -> [String] {
-        let array = UserDefaults.standard.object(forKey: "\(currentType.rawValue)Watchedlist") as? [String] ?? [String]()
-        
+    @discardableResult open func getWatched(completion: (([N]) -> Void)? = nil) -> [String] {
         TraktManager.shared.getWatched(forMediaOfType: N.self) { [unowned self] (medias, error) in
             guard error == nil else { return }
             
-            let ids = medias.map { $0.id }
-            let medias = Mapper<N>().toJSONArray(medias)
-            UserDefaults.standard.set(medias, forKey: "\(self.currentType.rawValue)WatchedlistRawMedia")
+            let ids = medias.map({ $0.id })
+            
             UserDefaults.standard.set(ids, forKey: "\(self.currentType.rawValue)Watchedlist")
             
-            completion?(ids)
+            completion?(medias)
         }
         
-        return array
+        let watched = UserDefaults.standard.object(forKey: "\(currentType.rawValue)Watchedlist") as? [String] ?? [String]()
+        
+        return watched
     }
     
     /**
      Stores movie progress and syncs with Trakt if available.
      
      - Parameter progress:      The progress of the playing video. Possible values range from 0...1.
-     - Parameter forMedia:      The media that is playing.
+     - Parameter forId:         The imdbId for movies and tvdbId for episodes of the media that is playing.
      - Parameter withStatus:    The status of the item.
      */
-    open func setCurrentProgress(_ progress: Float, forMedia media: N, withStatus status: Trakt.WatchedStatus) {
-        TraktManager.shared.scrobble(media.id, progress: progress, type: currentType, status: status)
-        
-        var raw = UserDefaults.standard.object(forKey: "\(currentType.rawValue)ProgressRawMedia") as? jsonDict ?? jsonDict()
-        var progressDict = UserDefaults.standard.object(forKey: "\(self.currentType.rawValue)Progress") as? [String: Float] ?? [String: Float]()
-        
-        raw[media.id] = Mapper<N>().toJSON(media)
-        progressDict[media.id] = progress
-        
-        progress >= 0.8 ? add(media) : ()
-        
-        UserDefaults.standard.set(raw, forKey: "\(self.currentType.rawValue)ProgressRawMedia")
-        UserDefaults.standard.set(progressDict, forKey: "\(self.currentType.rawValue)Progress")
+    open func setCurrentProgress(_ progress: Float, forId id: String, withStatus status: Trakt.WatchedStatus) {
+        TraktManager.shared.scrobble(id, progress: progress, type: currentType, status: status)
+        var dict = UserDefaults.standard.object(forKey: "\(currentType.rawValue)Progress") as? [String: Float] ?? [String: Float]()
+        dict[id] = progress
+        progress >= 0.8 ? add(id) : ()
+        UserDefaults.standard.set(dict, forKey: "\(currentType.rawValue)Progress")
     }
     
     /**
@@ -163,7 +149,7 @@ open class WatchedlistManager<N: Media & Hashable> {
      
      - Returns: Locally stored progress (may be out of date if user has authenticated with trakt).
      */
-    @discardableResult open func getProgress(completion: (([String: Float]) -> Void)? = nil) -> [String: Float] {
+    @discardableResult open func getProgress(completion: (([N: Float]) -> Void)? = nil) -> [String: Float] {
         TraktManager.shared.getPlaybackProgress(forMediaOfType: N.self) { (dict, error) in
             guard error == nil else { return }
             
@@ -171,11 +157,7 @@ open class WatchedlistManager<N: Media & Hashable> {
             let ids = media.map({ $0.id })
             let progress = Array(dict.values)
             
-            let raw = Dictionary<String, [String: Any]>(zip(ids, Mapper<N>().toJSONArray(media)))
-            let dict = Dictionary<String, Float>(zip(ids, progress))
-            
-            UserDefaults.standard.set(raw, forKey: "\(self.currentType.rawValue)ProgressRawMedia")
-            UserDefaults.standard.set(dict, forKey: "\(self.currentType.rawValue)Progress")
+            UserDefaults.standard.set(Dictionary<String, Float>(zip(ids, progress)), forKey: "\(self.currentType.rawValue)Progress")
             
             completion?(dict)
         }
@@ -186,15 +168,15 @@ open class WatchedlistManager<N: Media & Hashable> {
     }
     
     /**
-     Retrieves watched progress for movie or epsiode.
+     Gets watched progress for movie or epsiode.
      
-     - Parameter media: The media to retrieve progress for.
+     - Parameter id: The imdbId for movie or tvdbId for episode.
      
      - Returns: The users last play position progress from 0.0 to 1.0 (if any).
      */
-    open func currentProgress(_ media: N) -> Float {
+    open func currentProgress(_ id: String) -> Float {
         if let dict = UserDefaults.standard.object(forKey: "\(currentType.rawValue)Progress") as? [String: Float],
-            let progress = dict[media.id] {
+            let progress = dict[id] {
             return progress
         }
         return 0.0
@@ -207,41 +189,26 @@ open class WatchedlistManager<N: Media & Hashable> {
      
      - Returns: Locally stored on deck media id's (may be out of date if user has authenticated with trakt).
      */
-    @discardableResult open func getOnDeck(completion: (([N]) -> Void)? = nil) -> [N] {
+    @discardableResult open func getOnDeck(completion: (([N]) -> Void)? = nil) -> [String] {
         let group = DispatchGroup()
-        var watched:  [N] = []
-        var progress: [N] = []
         
-        watched = {
-            let raw = UserDefaults.standard.object(forKey: "\(currentType.rawValue)WatchedlistRawMedia") as? jsonArray ?? jsonArray()
-            let map = Mapper<N>().mapArray(JSONArray: raw) ?? [N]()
-            return map
-        }()
+        var updatedWatched:  [N] = []
+        var updatedProgress: [N] = []
         
         group.enter()
-        getWatched() { _ in
-            let raw = UserDefaults.standard.object(forKey: "\(self.currentType.rawValue)WatchedlistRawMedia") as? jsonArray ?? jsonArray()
-            let map = Mapper<N>().mapArray(JSONArray: raw) ?? [N]()
-            watched = map
+        let watched = getWatched() { updated in
+            updatedWatched = updated
             group.leave()
         }
         
-        progress = {
-            let raw = UserDefaults.standard.object(forKey: "\(currentType.rawValue)ProgressRawMedia") as? jsonDict ?? jsonDict()
-            let map = Mapper<N>().mapArray(JSONArray: Array(raw.values)) ?? [N]()
-            return map
-        }()
-        
         group.enter()
-        getProgress() { _ in
-            let raw = UserDefaults.standard.object(forKey: "\(self.currentType.rawValue)ProgressRawMedia") as? jsonDict ?? jsonDict()
-            let map = Mapper<N>().mapArray(JSONArray: Array(raw.values)) ?? [N]()
-            progress = map
+        let progress = Array(getProgress() { updated in
+            updatedProgress = Array(updated.keys)
             group.leave()
-        }
+        }.keys)
         
         group.notify(queue: .main) {
-            completion?(Array(Set(progress).subtracting(watched)))
+            completion?(Array(Set(updatedProgress).subtracting(updatedWatched)))
         }
         
         return Array(Set(progress).subtracting(watched))
