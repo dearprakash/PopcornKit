@@ -465,6 +465,35 @@ open class TraktManager: NetworkManager {
             }
         }
     }
+    
+    /**
+     Searches Trakt for people (crew or actor).
+     
+     - Parameter person:        The name of the person to search.
+     
+     - Parameter completion:    Completion handler for the request. Returns an array of people matching the passed in title, error upon failure.
+     */
+    open func search(forPerson person: String, completion: @escaping ([Person]?, NSError?) -> Void) {
+        self.manager.request(Trakt.base + Trakt.search + Trakt.person, parameters: ["query": person], headers: Trakt.Headers.Default).validate().responseJSON { (response) in
+            guard let value = response.result.value,
+                let persons: [Person] = Mapper<Crew>().mapArray(JSONObject: value) // Type of person doesn't matter as it will succeed either way.
+                else { completion(nil, response.result.error as NSError?); return }
+            
+            let group = DispatchGroup()
+            var people = [Person]()
+            
+            for var person in persons {
+                group.enter()
+                TMDBManager.shared.getCharacterHeadshots(forPersonWithImdbId: person.imdbId, orTMDBId: person.tmdbId, completion: { (_, image, error) in
+                    if let image = image { person.largeImage = image }
+                    people.append(person)
+                    group.leave()
+                })
+            }
+            
+            group.notify(queue: .main) { completion(people, nil) }
+        }
+    }
 }
 
 /// When mapping to movies or shows from Trakt, the JSON is formatted differently to the Popcorn API. This struct is used to distinguish from which API the Media is being mapped from.

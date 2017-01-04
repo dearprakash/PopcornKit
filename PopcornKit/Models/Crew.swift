@@ -7,7 +7,7 @@ import ObjectMapper
  Struct for managing crew objects.
  */
 public struct Crew: Person, Equatable {
-
+    
     /// Name of the person.
     public let name: String
     /// Their job on set.
@@ -38,7 +38,7 @@ public struct Crew: Person, Equatable {
     
     private init(_ map: Map) throws {
         self.name = try map.value("person.name")
-        self.job = try map.value("job")
+        self.job = (try? map.value("job")) ?? "Unknown"
         self.largeImage = try? map.value("person.images.headshot.full")
         self.imdbId = try map.value("person.ids.imdb")
         self.tmdbId = try map.value("person.ids.tmdb")
@@ -60,7 +60,7 @@ public struct Crew: Person, Equatable {
             name >>> map["person.name"]
         }
     }
-
+    
 }
 
 public func ==(rhs: Crew, lhs: Crew) -> Bool {

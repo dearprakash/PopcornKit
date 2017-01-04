@@ -8,6 +8,7 @@ public struct Trakt {
     static let shows = "/shows"
     static let movies = "/movies"
     static let people = "/people"
+    static let person = "/person"
     static let seasons = "/seasons"
     static let episodes = "/episodes"
     static let auth = "/oauth"
@@ -44,6 +45,7 @@ public struct Trakt {
         case shows = "shows"
         case episodes = "episodes"
         case animes = "animes"
+        case people = "people"
     }
     /**
      Watched status of media.

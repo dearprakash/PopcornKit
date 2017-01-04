@@ -28,7 +28,7 @@ public struct Actor: Person, Equatable {
         return largeImage?.replacingOccurrences(of: "w1920", with: "w300")
     }
     
-
+    
     public init?(map: Map) {
         do { self = try Actor(map) }
         catch { return nil }
@@ -41,7 +41,7 @@ public struct Actor: Person, Equatable {
         self.imdbId = try map.value("person.ids.imdb")
         self.tmdbId = try map.value("person.ids.tmdb")
     }
-
+    
     public mutating func mapping(map: Map) {
         switch map.mappingType {
         case .fromJSON:
