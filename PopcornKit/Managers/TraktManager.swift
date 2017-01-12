@@ -71,7 +71,7 @@ open class TraktManager: NetworkManager {
     /**
      Retrieves users previously watched videos.
      
-     - Parameter forMediaOfType:    The type of the item (either movie or show).
+     - Parameter forMediaOfType:    The type of the item (either movie or episode).
      
      - Parameter completion:        The completion handler for the request containing an array of media objects and an optional error.
      */

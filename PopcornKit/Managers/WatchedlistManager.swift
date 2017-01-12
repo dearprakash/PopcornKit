@@ -6,10 +6,7 @@ import ObjectMapper
 private struct Static {
     static var episodeInstance: WatchedlistManager<Episode>? = nil
     static var movieInstance: WatchedlistManager<Movie>? = nil
-    static var showInstance: WatchedlistManager<Show>? = nil
 }
-
-typealias jsonDict = [String: [String: Any]]
 
 /// Class for managing a users watch history. **Only available for movies, and episodes**.
 open class WatchedlistManager<N: Media & Hashable> {
@@ -24,14 +21,6 @@ open class WatchedlistManager<N: Media & Hashable> {
         return Static.episodeInstance!
     }
     
-    /// Creates new instance of WatchedlistManager class with type of Shows.
-    public class var show: WatchedlistManager<Show> {
-        DispatchQueue.once(token: "ShowWatchedlist") {
-            Static.showInstance = WatchedlistManager<Show>()
-        }
-        return Static.showInstance!
-    }
-    
     /// Creates new instance of WatchlistManager class with type of Movies.
     public class var movie: WatchedlistManager<Movie> {
         DispatchQueue.once(token: "MovieWatchedlist") {
@@ -40,16 +29,14 @@ open class WatchedlistManager<N: Media & Hashable> {
         return Static.movieInstance!
     }
     
-    public init(){
+    private init?() {
         switch N.self {
         case is Movie.Type:
             currentType = .movies
         case is Episode.Type:
             currentType = .episodes
-        case is Show.Type:
-            currentType = .shows
         default:
-            currentType = .movies
+            return nil
         }
     }
     

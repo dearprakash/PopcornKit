@@ -4,7 +4,6 @@ import Foundation
 import ObjectMapper
 
 private struct Static {
-    static var episodeInstance: WatchlistManager<Episode>? = nil
     static var movieInstance: WatchlistManager<Movie>? = nil
     static var showInstance: WatchlistManager<Show>? = nil
 }
@@ -15,14 +14,6 @@ typealias jsonArray = [[String : Any]]
 open class WatchlistManager<N: Media> {
     
     private let currentType: Trakt.MediaType
-    
-    /// Creates new instance of WatchlistManager class with type of Episodes.
-    public class var episode: WatchlistManager<Episode> {
-        DispatchQueue.once(token: "EpisodeWatchlist") {
-            Static.episodeInstance = WatchlistManager<Episode>()
-        }
-        return Static.episodeInstance!
-    }
     
     /// Creates new instance of WatchlistManager class with type of Shows.
     public class var show: WatchlistManager<Show> {
@@ -40,16 +31,14 @@ open class WatchlistManager<N: Media> {
         return Static.movieInstance!
     }
     
-    public init(){
+    private init?() {
         switch N.self {
         case is Movie.Type:
             currentType = .movies
-        case is Episode.Type:
-            currentType = .episodes
         case is Show.Type:
             currentType = .shows
         default:
-            currentType = .movies
+            return nil
         }
     }
     
