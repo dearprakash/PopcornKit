@@ -55,22 +55,26 @@ open class WatchedlistManager<N: Media & Hashable> {
      - Parameter id: The imdbId or tvdbId of the movie or episode.
      */
     open func add(_ id: String) {
-        TraktManager.shared.scrobble(id, progress: 1, type: currentType, status: .finished)
+        TraktManager.shared.add(id, toWatchedlistOfType: currentType)
         var array = UserDefaults.standard.object(forKey: "\(currentType.rawValue)Watchedlist") as? [String] ?? [String]()
         !array.contains(id) ? array.append(id) : ()
         UserDefaults.standard.set(array, forKey: "\(currentType.rawValue)Watchedlist")
     }
     
     /**
-     Removes movie or episode from a users watchedlist and syncs with Trakt if available.
+     Removes movie or episode from a users watchedlist, sets its progress to 0.0 and syncs with Trakt if available.
      
      - Parameter id: The imdbId for movie or tvdbId for episode.
      */
     open func remove(_ id: String) {
         TraktManager.shared.remove(id, fromWatchedlistOfType: currentType)
+        TraktManager.shared.scrobble(id, progress: 0, type: currentType, status: .finished)
         if var array = UserDefaults.standard.object(forKey: "\(currentType.rawValue)Watchedlist") as? [String],
+            let dict = UserDefaults.standard.object(forKey: "\(currentType.rawValue)Progress") as? [String: Float],
             let index = array.index(of: id) {
             array.remove(at: index)
+            dict[id] = 0
+            UserDefaults.standard.set(dict, forKey: "\(currentType.rawValue)Progress")
             UserDefaults.standard.set(array, forKey: "\(currentType.rawValue)Watchedlist")
         }
     }
@@ -101,14 +105,12 @@ open class WatchedlistManager<N: Media & Hashable> {
             guard error == nil else { return }
             
             let ids = medias.map({ $0.id })
-            
             UserDefaults.standard.set(ids, forKey: "\(self.currentType.rawValue)Watchedlist")
             
             completion?(medias)
         }
         
         let watched = UserDefaults.standard.object(forKey: "\(currentType.rawValue)Watchedlist") as? [String] ?? [String]()
-        
         return watched
     }
     
@@ -150,7 +152,6 @@ open class WatchedlistManager<N: Media & Hashable> {
         }
         
         let progress = UserDefaults.standard.object(forKey: "\(self.currentType.rawValue)Progress") as? [String: Float] ?? [String: Float]()
-        
         return progress
     }
     
