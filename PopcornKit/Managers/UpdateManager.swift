@@ -139,8 +139,8 @@ public final class UpdateManager: NSObject {
 internal class VersionString: NSObject, NSCoding {
     
     enum ReleaseType: String {
-        case Beta = "beta"
-        case Stable = "stable"
+        case beta = "beta"
+        case stable = "stable"
     }
     
     let date: Date
@@ -159,10 +159,10 @@ internal class VersionString: NSObject, NSCoding {
         if let first = components.first, let _ = components[safe: 1], let _ = components[safe: 2] {
             if first == "0" // Beta release. Format will be 0.<major>.<minor>-<patch>.
             {
-                self.releaseType = .Beta
+                self.releaseType = .beta
             } else // Stable release. Format will be <major>.<minor>.<patch>.
             {
-                self.releaseType = .Stable
+                self.releaseType = .stable
             }
             return
         }

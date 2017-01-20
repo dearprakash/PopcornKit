@@ -2,7 +2,9 @@
 
 import ObjectMapper
 
+@available(*, unavailable, message: "Anime API does not provide sufficient metadata to be included in the application. If the API is not improved, this class shall be removed in future releases.")
 open class AnimeManager: NetworkManager {
+    /*
     
     /// Creates new instance of AnimeManager class
     open static let shared = AnimeManager()
@@ -119,4 +121,5 @@ open class AnimeManager: NetworkManager {
             completion(Mapper<Show>().map(JSONObject: value), nil)
         }
     }
+ */
 }

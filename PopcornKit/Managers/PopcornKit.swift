@@ -7,44 +7,6 @@ import Alamofire
 #endif
 
 /**
- Load Anime from API.
- 
- - Parameter page:       The page number to load.
- - Parameter filterBy:   Sort the response by Popularity, Year, Date Rating, Alphabet or Trending.
- - Parameter genre:      Only return anime that match the provided genre.
- - Parameter searchTerm: Only return animes that match the provided string.
- - Parameter orderBy:    Ascending or descending.
- 
- - Parameter completion: Completion handler for the request. Returns array of animes upon success, error upon failure.
- */
-public func loadAnime(
-    _ page: Int = 1,
-    filterBy filter: AnimeManager.Filters = .popularity,
-    genre: AnimeManager.Genres = .all,
-    searchTerm: String? = nil,
-    orderBy order: AnimeManager.Orders = .descending,
-    completion: @escaping ([Show]?, NSError?) -> Void) {
-    AnimeManager.shared.load(
-        page,
-        filterBy: filter,
-        genre: genre,
-        searchTerm: searchTerm,
-        orderBy: order,
-        completion: completion)
-}
-
-/**
- Get more anime information.
- 
- - Parameter id:            The identification code of the anime.
- 
- - Parameter completion:    Completion handler for the request. Returns show upon success, error upon failure.
- */
-public func getAnimeInfo(_ id: String, completion: @escaping (Show?, NSError?) -> Void) {
-    AnimeManager.shared.getInfo(id, completion: completion)
-}
-
-/**
  Load TV Shows from API.
  
  - Parameter page:       The page number to load.

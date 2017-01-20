@@ -70,7 +70,7 @@ open class WatchedlistManager<N: Media & Hashable> {
         TraktManager.shared.remove(id, fromWatchedlistOfType: currentType)
         TraktManager.shared.scrobble(id, progress: 0, type: currentType, status: .finished)
         if var array = UserDefaults.standard.object(forKey: "\(currentType.rawValue)Watchedlist") as? [String],
-            let dict = UserDefaults.standard.object(forKey: "\(currentType.rawValue)Progress") as? [String: Float],
+            var dict = UserDefaults.standard.object(forKey: "\(currentType.rawValue)Progress") as? [String: Float],
             let index = array.index(of: id) {
             array.remove(at: index)
             dict[id] = 0

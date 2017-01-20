@@ -4,51 +4,51 @@ import Foundation
 import ObjectMapper
 
 /**
- Struct for managing show or anime objects. 
+ Struct for managing show objects. 
  
- **Important:** In the description of all the optional variables where it says another method must be called on **only** `ShowManager` or `AnimeManager`to populate x, does not apply if the show or anime was loaded from Trakt. **However** episodes array will be empty for both Trakt and popcorn-api show objects.
+ **Important:** In the description of all the optional variables where it says another method must be called on **only** `ShowManager` to populate `x`, does not apply if the show was loaded from Trakt. **However** episodes array will be empty for both Trakt and popcorn-api show objects.
  
  `TraktManager` has to be called regardless to fill up the special variables.
  */
 public struct Show: Media, Equatable {
     
-    /// Imdb for show, arbitrary id for anime.
+    /// Imdb id of show.
     public var id: String
 
     /// TMDB id of the show. This will be `nil` unless explicitly set by calling `getTMDBId:forImdbId:completion:` on `TraktManager` or the show was loaded from Trakt.
     public var tmdbId: Int?
     
-    /// Tvdb for show and anime. Will **sometimes** be `nil` if shows were loaded from popcorn-api and not trakt. ie. unless user selects show from relatedShows.
+    /// Tvdb for show. Will **sometimes** be `nil` if shows were loaded from popcorn-api and not trakt. ie. unless user selects show from relatedShows.
     public var tvdbId: String?
     
-    /// Slug for show and anime.
+    /// Slug of the show.
     public let slug: String
     
-    /// Title for show and anime.
+    /// Title of the show.
     public let title: String
     
-    /// Release date of the show and anime.
+    /// Release date of the show.
     public let year: String
     
-    /// Rating percentage of the show and anime.
+    /// Rating percentage of the show.
     public let rating: Float
     
-    /// Summary of the show and anime. Will default to "No summary available." until `getInfo:imdbId:completion` is called on `ShowManager` and shows are updated. **However**, there may not be a summary provided by the api.
+    /// Summary of the show. Will default to "No summary available." until `getInfo:imdbId:completion` is called on `ShowManager` and shows are updated. **However**, there may not be a summary provided by the api.
     public let summary: String
     
-    /// Network that the show is officially released on. **Anime Not Supported**. Will be `nil` until `getInfo:imdbId:completion` is called on `ShowManager` and shows are updated.
+    /// Network that the show is officially released on. Will be `nil` until `getInfo:imdbId:completion` is called on `ShowManager` and shows are updated.
     public var network: String?
     
-    /// Air day of the show. **Anime Not Supported**. Will be `nil` until `getInfo:imdbId:completion` is called on `ShowManager` and shows are updated.
+    /// Air day of the show. Will be `nil` until `getInfo:imdbId:completion` is called on `ShowManager` and shows are updated.
     public var airDay: String?
     
-    /// Air time of the show. **Anime Not Supported**. Will be `nil` until `getInfo:imdbId:completion` is called on `ShowManager` and shows are updated.
+    /// Air time of the show. Will be `nil` until `getInfo:imdbId:completion` is called on `ShowManager` and shows are updated.
     public var airTime: String?
     
-    /// Average runtime of each episode of the show and anime rounded to the nearest minute. Will be `nil` until `getInfo:imdbId:completion` is called on `ShowManager` and shows are updated.
+    /// Average runtime of each episode of the show rounded to the nearest minute. Will be `nil` until `getInfo:imdbId:completion` is called on `ShowManager` and shows are updated.
     public var runtime: String?
     
-    /// Status of the show and anime. ie. Returning series, Ended etc. Will be `nil` until `getInfo:imdbId:completion` is called on `ShowManager` and shows are updated.
+    /// Status of the show. ie. Returning series, Ended etc. Will be `nil` until `getInfo:imdbId:completion` is called on `ShowManager` and shows are updated.
     public var status: String?
     
     /// The season numbers of the available seasons. The popcorn-api may only retrieve some seasons in arbitrary order. This variable contains the sorted season numbers. For example, popcorn-api only fetches series 21-28 of The Simpsons. This array will contain the numbers 21, 22, 23 ... 28 sorted by lowest first.
@@ -87,19 +87,19 @@ public struct Show: Media, Equatable {
     public var largeCoverImage: String?
     
     
-    /// All the people that worked on the show or anime. Empty by default. Must be filled by calling `getPeople:forMediaOfType:id:completion` on `TraktManager`.
+    /// All the people that worked on the show. Empty by default. Must be filled by calling `getPeople:forMediaOfType:id:completion` on `TraktManager`.
     public var crew = [Crew]()
     
-    /// All the actors in the show or anime. Empty by default. Must be filled by calling `getPeople:forMediaOfType:id:completion` on `TraktManager`.
+    /// All the actors in the show. Empty by default. Must be filled by calling `getPeople:forMediaOfType:id:completion` on `TraktManager`.
     public var actors = [Actor]()
     
-    /// The related shows or anime. Empty by default. Must be filled by calling `getRelated:media:completion` on `TraktManager`.
+    /// The related shows. Empty by default. Must be filled by calling `getRelated:media:completion` on `TraktManager`.
     public var related = [Show]()
     
-    /// All the episodes in the show or anime sorted by season number. Empty by default. Must be filled by calling `getInfo:imdbId:completion` on `ShowManager or AnimeManager`.
+    /// All the episodes in the show sorted by season number. Empty by default. Must be filled by calling `getInfo:imdbId:completion` on `ShowManager`.
     public var episodes = [Episode]()
     
-    /// The genres associated with the show or anime. Will be empty by default on shows but will be filled by default on anime. Can be filled by calling `getInfo:imdbId:completion` on `ShowManager or AnimeManager`.
+    /// The genres associated with the show. Empty by default. Must be filled by calling `getInfo:imdbId:completion` on `ShowManager`.
     public var genres = [String]()
     
     public init?(map: Map) {

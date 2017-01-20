@@ -10,8 +10,8 @@ import ObjectMapper
  */
 public struct Episode: Media, Equatable {
     
-    /// The date of which the episode was first aired. Will be `nil` for all anime episodes.
-    public var firstAirDate: Date?
+    /// The date of which the episode was first aired.
+    public var firstAirDate: Date
     
     /// The title of the episode. If there is no title, the string "Episode" followed by the episode number will be used.
     public let title: String
@@ -55,7 +55,7 @@ public struct Episode: Media, Equatable {
     public var largeBackgroundImage: String?
     
     
-    /// The torrents for the episode. May be empty if no torrents are available or if episode was loaded from Trakt. Can be obtained by calling `getInfo:imdbId:completion` on `ShowManager or AnimeManager`. Keep in mind the aformentioned method does not return images so `getEpisodeMetadata:showId:episodeNumber:seasonNumber:completion:` will have to be called on `TraktManager`.
+    /// The torrents for the episode. May be empty if no torrents are available or if episode was loaded from Trakt. Can be obtained by calling `getInfo:imdbId:completion` on `ShowManager`. Keep in mind the aformentioned method does not return images so `getEpisodeMetadata:showId:episodeNumber:seasonNumber:completion:` will have to be called on `TraktManager`.
     public var torrents: [Torrent]! = [Torrent]()
     
     /// The current torrent that the user has selected. Will be `nil` until the user selects a torrent but it is in the interest of good UX to automatically select a torrent for the user.

@@ -231,8 +231,8 @@ open class TraktManager: NetworkManager {
     /**
      Retrieves cast and crew information for a movie or show.
      
-     - Parameter type:  The type of the item (movie or show **not anime**). Anime is supported but is referenced as a show not as its own type.
-     - Parameter id:    The id of the movie, show or anime.
+     - Parameter type:  The type of the item (movie or show).
+     - Parameter id:    The id of the movie or show.
      
      - Parameter completion: The completion handler for the request containing an array of actors, array of crews and an optional error.
      */

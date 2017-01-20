@@ -44,15 +44,14 @@ public struct Trakt {
         case movies = "movies"
         case shows = "shows"
         case episodes = "episodes"
-        case animes = "animes"
         case people = "people"
     }
     /**
      Watched status of media.
      
-     - .Watching:   When the video intially starts playing or is unpaused.
-     - .Paused:     When the video is paused.
-     - .Finished:   When the video is stopped or finishes playing on its own.
+     - .watching:   When the video intially starts playing or is unpaused.
+     - .paused:     When the video is paused.
+     - .finished:   When the video is stopped or finishes playing on its own.
      */
     public enum WatchedStatus: String {
         /// When the video intially starts playing or is unpaused.
@@ -67,11 +66,9 @@ public struct Trakt {
 public struct Popcorn {
     static let base = "https://tv-v2.api-fetch.website"
     static let shows = "/shows"
-    static let animes = "/animes"
     static let movies = "/movies"
 
     static let movie = "/movie"
-    static let anime = "/anime"
     static let show = "/show"
 }
 

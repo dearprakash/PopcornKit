@@ -63,6 +63,16 @@ public struct Crew: Person, Equatable {
     
 }
 
+// MARK: - Hashable
+
+extension Crew: Hashable {
+    public var hashValue: Int {
+        return imdbId.hashValue
+    }
+}
+
+// MARK: Equatable
+
 public func ==(rhs: Crew, lhs: Crew) -> Bool {
     return rhs.imdbId == lhs.imdbId
 }

@@ -46,26 +46,6 @@ class PopcornKitTests: XCTestCase {
         self.waitForExpectations(timeout: 20.0, handler: nil)
     }
     
-    // MARK: - Anime
-    
-    func testAnimes() {
-        let expectation = self.expectation(description: "Fetch shows")
-            PopcornKit.loadAnime(1, filterBy: .date) { (animes, error) in
-            XCTAssertNotNil(animes, error?.localizedDescription ?? "Unknown error")
-            expectation.fulfill()
-        }
-        self.waitForExpectations(timeout: 20.0, handler: nil)
-    }
-    
-    func testAnime() {
-        let expectation = self.expectation(description: "Fetch single anime show")
-        PopcornKit.getAnimeInfo("5646") { (anime, error) in
-            XCTAssertNotNil(anime, error?.localizedDescription ?? "Unknown error")
-            expectation.fulfill()
-        }
-        self.waitForExpectations(timeout: 20.0, handler: nil)
-    }
-    
     // MARK: - Subtitles
     
     func testSubtitles() {
@@ -102,15 +82,6 @@ class PopcornKitTests: XCTestCase {
         self.waitForExpectations(timeout: 20.0, handler: nil)
     }
     
-    func testWatched() {
-        let expectation = self.expectation(description: "Get watchlist for a user.")
-        TraktManager.shared.getWatched(forMediaOfType: .movies) { (ids, error) in
-            XCTAssertNotEqual(ids.count, 0, error?.localizedDescription ?? "Unknown error")
-            expectation.fulfill()
-        }
-        self.waitForExpectations(timeout: 30.0, handler: nil)
-    }
-    
     func testPeople() {
         let expectation = self.expectation(description: "Get a movies cast and crew.")
         TraktManager.shared.getPeople(forMediaOfType: .movies, id: "tt1431045") { (actors, crews, error) in
@@ -122,7 +93,7 @@ class PopcornKitTests: XCTestCase {
     
     func testEpisode() {
         let expectation = self.expectation(description: "Get detailed episode information.")
-        TraktManager.shared.getEpisodeMetadata("tt0944947", episodeNumber: 1, seasonNumber: 1) { (tvdbId, imdbId, error) in
+        TraktManager.shared.getEpisodeMetadata("tt0944947", episodeNumber: 1, seasonNumber: 1) { (episode, error) in
             XCTAssertNil(error, error?.localizedDescription ?? "Unknown error")
             expectation.fulfill()
         }

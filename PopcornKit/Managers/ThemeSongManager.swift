@@ -14,7 +14,7 @@ public class ThemeSongManager: NSObject, AVAudioPlayerDelegate {
     /// Global download task ref.
     private var task: URLSessionTask?
     
-    /// Creates new instance of AnimeManager class
+    /// Creates new instance of ThemeSongManager class
     public static let shared: ThemeSongManager = ThemeSongManager()
     
     /**

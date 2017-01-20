@@ -10,11 +10,11 @@ public struct Actor: Person, Equatable {
     
     /// Name of the actor.
     public let name: String
-    /// Name of the character the actor played in a movie.
+    /// Name of the character the actor played in a movie/show.
     public let characterName: String
     /// Imdb id of the actor.
     public let imdbId: String
-    /// TMDB id of the person.
+    /// TMDB id of the actor.
     public let tmdbId: Int
     
     /// If headshot image is available, it is returned with size 1000*1500.
@@ -57,6 +57,16 @@ public struct Actor: Person, Equatable {
         }
     }
 }
+
+// MARK: - Hashable
+
+extension Actor: Hashable {
+    public var hashValue: Int {
+        return imdbId.hashValue
+    }
+}
+
+// MARK: Equatable
 
 public func ==(rhs: Actor, lhs: Actor) -> Bool {
     return rhs.imdbId == lhs.imdbId
