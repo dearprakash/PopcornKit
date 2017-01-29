@@ -89,13 +89,13 @@ public struct Movie: Media, Equatable {
     public var related = [Movie]()
     
     /// The torrents for the movie. Will be empty by default if the movies were loaded from Trakt. Can be filled by calling `getInfo:imdbId:completion` on `MovieManager`.
-    public var torrents: [Torrent]! = [Torrent]()
+    public var torrents = [Torrent]()
     
     /// The current torrent that the user has selected. Will be `nil` until the user selects a torrent but it is in the interest of good UX to automatically select a torrent for the user.
     public var currentTorrent: Torrent?
     
     /// The subtitles associated with the movie. Empty by default. Must be filled by calling `search:episode:imdbId:limit:completion:` on `SubtitlesManager`.
-    public var subtitles: [Subtitle]! = [Subtitle]()
+    public var subtitles = [Subtitle]()
     
     /// The current subtitle that the user has selected. Will be `nil` until the user selects a subtitle.
     public var currentSubtitle: Subtitle?

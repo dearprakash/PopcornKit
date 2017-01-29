@@ -541,7 +541,7 @@ struct TraktContext: MapContext {}
      
      - Parameter error: The underlying error.
      */
-    @objc optional func authenticationDidFail(withError error: NSError)
+    @objc optional func authenticationDidFail(with error: NSError)
 }
 
 extension TraktManager {
@@ -602,7 +602,7 @@ extension TraktManager {
             let code = query["code"],
             query["state"] == state
             else {
-                delegate?.authenticationDidFail?(withError: NSError(domain: "com.popcorntimetv.popcornkit.error", code: -1, userInfo: [NSLocalizedDescriptionKey: "An unknown error occured."]))
+                delegate?.authenticationDidFail?(with: NSError(domain: "com.popcorntimetv.popcornkit.error", code: -1, userInfo: [NSLocalizedDescriptionKey: "An unknown error occured."]))
                 return
         }
         
@@ -614,9 +614,13 @@ extension TraktManager {
                                     clientID: Trakt.apiKey,
                                     clientSecret: Trakt.apiSecret,
                                     useBasicAuthentication: false).store(withIdentifier: "trakt")
-                self.delegate?.authenticationDidSucceed?()
+                DispatchQueue.main.sync {
+                    self.delegate?.authenticationDidSucceed?()
+                }
             } catch let error as NSError {
-                self.delegate?.authenticationDidFail?(withError: error)
+                DispatchQueue.main.sync {
+                    self.delegate?.authenticationDidFail?(with: error)
+                }
             }
         }
     }

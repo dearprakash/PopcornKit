@@ -38,7 +38,7 @@ public struct Crew: Person, Equatable {
     
     private init(_ map: Map) throws {
         self.name = try map.value("person.name")
-        self.job = (try? map.value("job")) ?? "Unknown"
+        self.job = (try? map.value("job")) ?? ""
         self.largeImage = try? map.value("person.images.headshot.full")
         self.imdbId = try map.value("person.ids.imdb")
         self.tmdbId = try map.value("person.ids.tmdb")

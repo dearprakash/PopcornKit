@@ -14,10 +14,6 @@ open class SubtitlesManager: NetworkManager {
     private let secureBaseURL = "https://api.opensubtitles.org:443/xml-rpc"
     private let userAgent = "Popcorn Time v1"
     private var token: String?
-    public var protectionSpace: URLProtectionSpace {
-        let url = URL(string: secureBaseURL)!
-        return URLProtectionSpace(host: url.host!, port: (url as NSURL).port!.intValue, protocol: url.scheme, realm: nil, authenticationMethod: NSURLAuthenticationMethodHTTPBasic)
-    }
     
     /**
      Load subtitles from API. Use episode or ImdbId not both. Using ImdbId rewards better results.
@@ -67,22 +63,14 @@ open class SubtitlesManager: NetworkManager {
     /**
      Login to OpenSubtitles API. Login is required to use the API.
      
-     - Parameter completion:    Optional completion handler called when request is sucessfull.
-     - Parameter error:         Optional error completion handler called when request fails or username/password is incorrect.
+     - Parameter completion:    Optional completion handler called when request completes. Contains an optional Error indicating the success of the operation.
      */
     public func login(_ completion: ((NSError?) -> Void)?) {
-        var username = ""
-        var password = ""
-        if let credential = URLCredentialStorage.shared.credentials(for: protectionSpace)?.values.first {
-            username = credential.user!
-            password = credential.password!
-        }
-        self.manager.requestXMLRPC(secureBaseURL, methodName: "LogIn", parameters: [username, password, "en", userAgent]).validate().responseXMLRPC { response in
+        self.manager.requestXMLRPC(secureBaseURL, methodName: "LogIn", parameters: ["", "", "en", userAgent]).validate().responseXMLRPC { response in
             guard let value = response.result.value,
                 let status = value[0]["status"].string?.components(separatedBy: " ").first
                 , response.result.isSuccess && status == "200" else {
-                    let statusError = response.result.error ?? NSError(domain: "com.AlamofireXMLRPC.error", code: -403, userInfo: [NSLocalizedDescriptionKey: "Username or password is incorrect."])
-                    completion?(statusError as NSError)
+                    completion?(response.result.error as NSError?)
                     return
             }
             self.token = value[0]["token"].string

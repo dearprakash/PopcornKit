@@ -19,24 +19,24 @@ public protocol Media: Mappable {
     var mediumCoverImage: String? { get }
     var largeCoverImage: String? { get set }
     
-    /// Will be `nil` is Media is Show.
-    var subtitles: [Subtitle]! { get set }
-    /// Will be `nil` is Media is Show.
+    /// Will be `nil` if Media is Show.
+    var subtitles: [Subtitle] { get set }
+    /// Will be `nil` if Media is Show.
     var currentSubtitle: Subtitle? { get set }
     
-    /// Will be `nil` is Media is Show.
-    var torrents: [Torrent]! { get set }
-    /// Will be `nil` is Media is Show.
+    /// Will be `nil` if Media is Show.
+    var torrents: [Torrent] { get set }
+    /// Will be `nil` if Media is Show.
     var currentTorrent: Torrent? { get set }
 }
 
 // MARK: - Optional vars
 
 extension Media {
-    public var subtitles: [Subtitle]! { get { return nil } set {} }
+    public var subtitles: [Subtitle] { get { return [] } set {} }
     public var currentSubtitle: Subtitle? { get { return nil } set {} }
     
-    public var torrents: [Torrent]! { get { return nil } set {} }
+    public var torrents: [Torrent] { get { return [] } set {} }
     public var currentTorrent: Torrent? { get { return nil } set {} }
     
     public var smallCoverImage: String? { return nil }

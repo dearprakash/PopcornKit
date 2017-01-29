@@ -48,7 +48,9 @@ public class TraktAuthenticationViewController: UIViewController {
             DispatchQueue.global(qos: .default).async {
                 do {
                     try OAuthCredential(Trakt.base + Trakt.auth + Trakt.device + Trakt.token, parameters: ["code": deviceCode], clientID: Trakt.apiKey, clientSecret: Trakt.apiSecret, useBasicAuthentication: false).store(withIdentifier: "trakt")
-                    TraktManager.shared.delegate?.authenticationDidSucceed?()
+                    DispatchQueue.main.sync {
+                        TraktManager.shared.delegate?.authenticationDidSucceed?()
+                    }
                 } catch { }
             }
         }

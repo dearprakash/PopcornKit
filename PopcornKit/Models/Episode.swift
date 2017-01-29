@@ -56,13 +56,13 @@ public struct Episode: Media, Equatable {
     
     
     /// The torrents for the episode. May be empty if no torrents are available or if episode was loaded from Trakt. Can be obtained by calling `getInfo:imdbId:completion` on `ShowManager`. Keep in mind the aformentioned method does not return images so `getEpisodeMetadata:showId:episodeNumber:seasonNumber:completion:` will have to be called on `TraktManager`.
-    public var torrents: [Torrent]! = [Torrent]()
+    public var torrents = [Torrent]()
     
     /// The current torrent that the user has selected. Will be `nil` until the user selects a torrent but it is in the interest of good UX to automatically select a torrent for the user.
     public var currentTorrent: Torrent?
     
     /// The subtitles associated with the episode. Empty by default. Must be filled by calling `search:episode:imdbId:limit:completion:` on `SubtitlesManager`.
-    public var subtitles: [Subtitle]! = [Subtitle]()
+    public var subtitles = [Subtitle]()
     
     /// The current subtitle that the user has selected. Will be `nil` until the user selects a subtitle.
     public var currentSubtitle: Subtitle?
