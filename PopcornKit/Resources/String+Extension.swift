@@ -66,7 +66,7 @@ public let Trackers = [
 ]
 
 extension Dictionary {
-    init(_ seq: Zip2Sequence<[Key], [Value]>) {
+    public init(_ seq: Zip2Sequence<[Key], [Value]>) {
         self.init()
         for (k,v) in seq {
             self[k] = v
