@@ -18,8 +18,8 @@ public struct Show: Media, Equatable {
     /// TMDB id of the show. This will be `nil` unless explicitly set by calling `getTMDBId:forImdbId:completion:` on `TraktManager` or the show was loaded from Trakt.
     public var tmdbId: Int?
     
-    /// Tvdb for show. Will **sometimes** be `nil` if shows were loaded from popcorn-api and not trakt. ie. unless user selects show from relatedShows.
-    public var tvdbId: String?
+    /// Tvdb for show.
+    public var tvdbId: String
     
     /// Slug of the show.
     public let slug: String
@@ -110,7 +110,7 @@ public struct Show: Media, Equatable {
     private init(_ map: Map) throws {
         if map.context is TraktContext {
             self.id = try map.value("ids.imdb")
-            self.tvdbId = try? map.value("ids.tvdb", using: StringTransform())
+            self.tvdbId = try map.value("ids.tvdb", using: StringTransform())
             self.slug = try map.value("ids.slug")
             self.year = try map.value("year", using: StringTransform())
             self.airDay = try? map.value("airs.day")
@@ -118,7 +118,7 @@ public struct Show: Media, Equatable {
             self.rating = try map.value("rating")
         } else {
             self.id = try (try? map.value("imdb_id")) ?? map.value("_id")
-            self.tvdbId = try? map.value("tvdb_id")
+            self.tvdbId = try map.value("tvdb_id")
             self.year = try map.value("year")
             self.rating = try map.value("rating.percentage")
             self.largeCoverImage = try? map.value("images.poster"); largeCoverImage = largeCoverImage?.replacingOccurrences(of: "w500", with: "w1000").replacingOccurrences(of: "SX300", with: "SX1000")
