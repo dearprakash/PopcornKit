@@ -165,7 +165,7 @@ NS_ASSUME_NONNULL_BEGIN
  
  @param name    The new name of the controller.
  */
-- (void)setName:(NSString *)arg1;
+- (void)setName:(NSString *)name;
 
 /**
  Disconnect from the video route of the AirPlay route. Audio route will still stay connected.

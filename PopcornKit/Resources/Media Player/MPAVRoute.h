@@ -86,28 +86,28 @@ NS_ASSUME_NONNULL_BEGIN
  
  @param rawValue    The rawValue of the `displayRouteType` enum.
  */
-- (void)setDisplayRouteType:(int)arg1;
+- (void)setDisplayRouteType:(int)rawValue;
 
 /**
  Boolean value determining whether the current route is being streamed to or not.
  
  @param picked  Pass `YES` to connect to the current route, and `NO` to disconnect from the current route, if connected to.
  */
-- (void)setPicked:(BOOL)arg1;
+- (void)setPicked:(BOOL)picked;
 
 /**
  Changes the name of the current route.
  
  @param name    Set the `routeName` property to a custom string.
  */
-- (void)setRouteName:(NSString *)arg1;
+- (void)setRouteName:(NSString *)name;
 
 /**
  Change the wireless display route to any custom display route.
  
  @param route   Set the `wirelessDisplayRoute` property to a custom route.
  */
-- (void)setWirelessDisplayRoute:(MPAVRoute *)arg1;
+- (void)setWirelessDisplayRoute:(MPAVRoute *)route;
 
 @end
 
