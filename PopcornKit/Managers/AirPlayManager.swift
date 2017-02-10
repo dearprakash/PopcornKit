@@ -10,38 +10,27 @@ public enum TableViewUpdates {
     case delete
 }
 
-public protocol ConnectDevicesDelegate: class {
+public protocol AirPlayManagerDelegate: class {
     func updateTableView(dataSource newDataSource: [Any], updateType: TableViewUpdates, indexPaths: [IndexPath]?)
-    func didConnectToDevice(deviceIsChromecast chromecast: Bool)
-}
-
-extension ConnectDevicesDelegate {
-    public func didConnectToDevice(deviceIsChromecast chromecast: Bool) {}
 }
 
 open class AirPlayManager: NSObject, MPAVRoutingControllerDelegate {
     
     public var dataSourceArray = [MPAVRoute]()
-    public weak var delegate: ConnectDevicesDelegate?
+    public weak var delegate: AirPlayManagerDelegate?
     
-    public let routingController: MPAVRoutingController
-    public let audioDeviceController: MPAudioDeviceController
+    public let routingController = MPAVRoutingController()
+    public let audioDeviceController = MPAudioDeviceController()
     
     public override init() {
-        let MPAudioDeviceControllerClass = NSClassFromString("MPAudioDeviceController") as! NSObject.Type
-        let MPAVRoutingControllerClass = NSClassFromString("MPAVRoutingController") as! NSObject.Type
-        
-        routingController = MPAVRoutingControllerClass.init() as MPAVRoutingController
-        audioDeviceController = MPAudioDeviceControllerClass.init() as MPAudioDeviceController
-        
         super.init()
-        audioDeviceController.setRouteDiscoveryEnabled?(true)
-        routingController.setDelegate?(self)
+        audioDeviceController.routeDiscoveryEnabled = true
+        routingController.delegate = self
         updateRoutes()
     }
     
     public func updateRoutes() {
-        routingController.fetchAvailableRoutesWithCompletionHandler? { (routes) in
+        routingController.fetchAvailableRoutes { (routes) in
             if routes.count > self.dataSourceArray.count {
                 var indexPaths = [IndexPath]()
                 for index in self.dataSourceArray.count..<routes.count {
@@ -67,7 +56,7 @@ open class AirPlayManager: NSObject, MPAVRoutingControllerDelegate {
     }
     
     public func didSelectRoute(_ selectedRoute: MPAVRoute) {
-        routingController.pickRoute?(selectedRoute)
+        routingController.pick(selectedRoute)
     }
     
     // MARK: - MPAVRoutingControllerDelegate
