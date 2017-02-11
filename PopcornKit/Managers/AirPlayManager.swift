@@ -11,7 +11,7 @@ public enum TableViewUpdates {
 }
 
 public protocol AirPlayManagerDelegate: class {
-    func updateTableView(dataSource newDataSource: [Any], updateType: TableViewUpdates, indexPaths: [IndexPath]?)
+    func updateTableView(dataSource newDataSource: [Any], updateType: TableViewUpdates, rows: [Int]?)
 }
 
 open class AirPlayManager: NSObject, MPAVRoutingControllerDelegate {
@@ -32,25 +32,25 @@ open class AirPlayManager: NSObject, MPAVRoutingControllerDelegate {
     public func updateRoutes() {
         routingController.fetchAvailableRoutes { (routes) in
             if routes.count > self.dataSourceArray.count {
-                var indexPaths = [IndexPath]()
+                var rows = [Int]()
                 for index in self.dataSourceArray.count..<routes.count {
-                    indexPaths.append(IndexPath(row: index, section: 0))
+                    rows.append(index)
                 }
                 self.dataSourceArray = routes
-                self.delegate?.updateTableView(dataSource: self.dataSourceArray, updateType: .insert, indexPaths: indexPaths)
+                self.delegate?.updateTableView(dataSource: self.dataSourceArray, updateType: .insert, rows: rows)
             } else if routes.count < self.dataSourceArray.count {
-                var indexPaths = [IndexPath]()
+                var rows = [Int]()
                 for (index, route) in self.dataSourceArray.enumerated() {
                     if !routes.contains(where: { $0.routeUID == route.routeUID }) // If the new array doesn't contain an object in the old array it must have been removed
                     {
-                        indexPaths.append(IndexPath(row: index, section: 0))
+                        rows.append(index)
                     }
                 }
                 self.dataSourceArray = routes
-                self.delegate?.updateTableView(dataSource: self.dataSourceArray, updateType: .delete, indexPaths: indexPaths)
+                self.delegate?.updateTableView(dataSource: self.dataSourceArray, updateType: .delete, rows: rows)
             } else {
                 self.dataSourceArray = routes
-                self.delegate?.updateTableView(dataSource: self.dataSourceArray, updateType: .reload, indexPaths: nil)
+                self.delegate?.updateTableView(dataSource: self.dataSourceArray, updateType: .reload, rows: nil)
             }
         }
     }
