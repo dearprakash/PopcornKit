@@ -172,7 +172,7 @@ NS_ASSUME_NONNULL_BEGIN
  
  @param completion  Completion handler called upon request completion. Contains an optional error value indicating the requests status.
  */
-- (void)unpickAirPlayScreenRouteWithCompletion:(void (^_Nullable)(NSError *))completion;
+- (void)unpickAirPlayScreenRouteWithCompletion:(void (^)(NSError _Nullable *))completion;
 
 /**
  The video route for the correspoding route. Will return `nil` if the route is an audio only device.
