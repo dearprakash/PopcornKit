@@ -101,7 +101,7 @@
             let metadata = GCKMediaMetadata(metadataType: .movie)
             metadata.setString(castMetadata.title, forKey: kGCKMetadataKeyTitle)
             if let url = castMetadata.image {
-                metadata.addImage(GCKImage(url: url as URL, width: 480, height: 720))
+                metadata.addImage(GCKImage(url: url, width: 480, height: 720))
             }
             let mediaInfo = GCKMediaInformation(contentID: castMetadata.url, streamType: .buffered, contentType: castMetadata.contentType, metadata: metadata, streamDuration: 0, mediaTracks: nil, textTrackStyle: GCKMediaTextTrackStyle.createDefault(), customData: nil)
             sessionManager.currentCastSession?.remoteMediaClient?.loadMedia(mediaInfo, autoplay: true)

@@ -216,7 +216,7 @@ extension Collection {
 }
 
 extension UIAlertController {
-    func show() {
+    public func show() {
         let window = UIWindow(frame: UIScreen.main.bounds)
         window.rootViewController = UIViewController()
         window.windowLevel = UIWindowLevelAlert + 1
