@@ -28,6 +28,8 @@ public protocol Media: Mappable {
     var torrents: [Torrent] { get set }
     /// Will be `nil` if Media is Show.
     var currentTorrent: Torrent? { get set }
+    
+    init(title: String, id: String, tmdbId: Int?, slug: String, summary: String, torrents: [Torrent], subtitles: [Subtitle], largeBackgroundImage: String?, largeCoverImage: String?)
 }
 
 // MARK: - Optional vars

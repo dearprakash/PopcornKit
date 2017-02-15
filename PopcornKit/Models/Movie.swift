@@ -142,6 +142,22 @@ public struct Movie: Media, Equatable {
         }
         torrents.sort(by: <)
     }
+    
+    public init(title: String = "Unknown", id: String = "tt0000000", tmdbId: Int? = nil, slug: String = "unknown", summary: String = "No summary available.", torrents: [Torrent] = [], subtitles: [Subtitle] = [], largeBackgroundImage: String? = nil, largeCoverImage: String? = nil) {
+        self.title = title
+        self.id = id
+        self.tmdbId = tmdbId
+        self.slug = slug
+        self.summary = summary
+        self.torrents = torrents
+        self.subtitles = subtitles
+        self.largeBackgroundImage = largeBackgroundImage
+        self.largeCoverImage = largeCoverImage
+        self.year = "Unknown"
+        self.certification = "Unrated"
+        self.rating = 0.0
+        self.runtime = "0"
+    }
 
     public mutating func mapping(map: Map) {
         switch map.mappingType {

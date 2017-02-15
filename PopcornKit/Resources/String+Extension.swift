@@ -1,7 +1,7 @@
 
 
 extension String {
-    func slice(from start: String, to: String) -> String? {
+    public func slice(from start: String, to: String) -> String? {
         return (range(of: start)?.upperBound).flatMap { sInd in
             let eInd = range(of: to, range: sInd..<endIndex)
             if eInd != nil {
@@ -12,6 +12,7 @@ extension String {
             return substring(with: sInd..<endIndex)
         }
     }
+    
     var slugged: String {
         let allowedCharacters = CharacterSet(charactersIn: "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-")
         
@@ -37,7 +38,7 @@ extension String {
             })
     }
     
-    var queryString: [String: String] {
+    public var queryString: [String: String] {
         var queryStringDictionary = [String: String]()
         let urlComponents = components(separatedBy: "&")
         for keyValuePair in urlComponents {

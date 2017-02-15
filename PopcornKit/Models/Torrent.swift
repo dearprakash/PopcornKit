@@ -115,6 +115,16 @@ public struct Torrent: Mappable, Equatable, Comparable {
         }
     }
     
+    public init(health: Health = .unknown, url: String = "", hash: String? = nil, quality: String = "0p", seeds: Int = 0, peers: Int = 0, size: String? = nil) {
+        self.health = health
+        self.url = url
+        self.hash = hash
+        self.quality = quality
+        self.seeds = seeds
+        self.peers = peers
+        self.size = size
+    }
+    
     public mutating func mapping(map: Map) {
         switch map.mappingType {
         case .fromJSON:

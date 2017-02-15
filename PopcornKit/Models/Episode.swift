@@ -101,6 +101,21 @@ public struct Episode: Media, Equatable {
         self.largeBackgroundImage = try? map.value("images.fanart")
     }
     
+    public init(title: String = "Unknown", id: String = "0000000", tmdbId: Int? = nil, slug: String = "unknown", summary: String = "No summary available.", torrents: [Torrent] = [], subtitles: [Subtitle] = [], largeBackgroundImage: String? = nil, largeCoverImage: String? = nil) {
+        self.title = title
+        self.id = id
+        self.tmdbId = tmdbId
+        self.slug = slug
+        self.summary = summary
+        self.torrents = torrents
+        self.subtitles = subtitles
+        self.largeBackgroundImage = largeBackgroundImage
+        self.firstAirDate = .distantPast
+        self.season = -1
+        self.episode = -1
+        self.show = Show()
+    }
+    
     public mutating func mapping(map: Map) {
         switch map.mappingType {
         case .fromJSON:

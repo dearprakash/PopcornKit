@@ -146,6 +146,20 @@ public struct Show: Media, Equatable {
         self.episodes.sort(by: { $0.episode < $1.episode })
     }
     
+    public init(title: String = "Unknown", id: String = "tt0000000", tmdbId: Int? = nil, slug: String = "unknown", summary: String = "No summary available.", torrents: [Torrent] = [], subtitles: [Subtitle] = [], largeBackgroundImage: String? = nil, largeCoverImage: String? = nil) {
+        self.title = title
+        self.id = id
+        self.tmdbId = tmdbId
+        self.slug = slug
+        self.summary = summary
+        self.largeBackgroundImage = largeBackgroundImage
+        self.largeCoverImage = largeCoverImage
+        self.year = "Unknown"
+        self.rating = 0.0
+        self.runtime = "0"
+        self.tvdbId = "0000000"
+    }
+    
     public mutating func mapping(map: Map) {
         switch map.mappingType {
         case .fromJSON:
