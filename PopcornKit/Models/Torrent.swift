@@ -45,7 +45,10 @@ public struct Torrent: Mappable, Equatable, Comparable {
     
     /// Magnet link of the torrent. May be `nil` if the url recieved from popcorn-api points directly to a .torrent file to be downloaded.
     public var magnet: String? {
-        return url.contains("https://") ? nil : "magnet:?xt=urn:btih:\(self.hash!)&tr=" + Trackers.joined(separator: "&tr=")
+        if let hash = hash {
+            return "magnet:?xt=urn:btih:\(hash)&tr=" + Trackers.joined(separator: "&tr=")
+        }
+        return nil
     }
     
     /// Health of the torrent.
