@@ -4,7 +4,7 @@
     import Foundation
     import GoogleCast
     
-    public typealias CastMetaData = (title: String, image: URL?, contentType: String, subtitles: [Subtitle]?, url: String, mediaAssetsPath: URL)
+    public typealias CastMetaData = (title: String, image: URL?, contentType: String, subtitles: [Subtitle]?, url: String, mediaAssetsPath: URL, startPosition: TimeInterval)
     
     public protocol GoogleCastManagerDelegate: AirPlayManagerDelegate {
         func didConnectToDevice()
@@ -104,7 +104,7 @@
                 metadata.addImage(GCKImage(url: url, width: 480, height: 720))
             }
             let mediaInfo = GCKMediaInformation(contentID: castMetadata.url, streamType: .buffered, contentType: castMetadata.contentType, metadata: metadata, streamDuration: 0, mediaTracks: nil, textTrackStyle: GCKMediaTextTrackStyle.createDefault(), customData: nil)
-            sessionManager.currentCastSession?.remoteMediaClient?.loadMedia(mediaInfo, autoplay: true)
+            sessionManager.currentCastSession?.remoteMediaClient?.loadMedia(mediaInfo, autoplay: true, playPosition: castMetadata.startPosition)
         }
         
         
