@@ -81,17 +81,8 @@
         
         public func sessionManager(_ sessionManager: GCKSessionManager, didStart session: GCKSession) {
             if let castMetadata = castMetadata {
-                if let subtitles = castMetadata.subtitles {
-                    var mediaTracks = [GCKMediaTrack]()
-                    for (index, subtitle) in subtitles.enumerated() {
-                        mediaTracks.append(GCKMediaTrack(identifier: index, contentIdentifier: castMetadata.mediaAssetsPath.appendingPathComponent("Subtitles", isDirectory: true).appendingPathComponent(subtitle.ISO639 + ".vtt").relativeString, contentType: "text/vtt", type: .text, textSubtype: .captions, name: subtitle.language, languageCode: subtitle.ISO639, customData: nil))
-                    }
-                    self.streamToDevice(mediaTracks, sessionManager: sessionManager, castMetadata: castMetadata)
-                    self.delegate?.didConnectToDevice()
-                } else {
-                    streamToDevice(sessionManager: sessionManager, castMetadata: castMetadata)
-                    delegate?.didConnectToDevice()
-                }
+                streamToDevice(sessionManager: sessionManager, castMetadata: castMetadata)
+                delegate?.didConnectToDevice()
             } else {
                 delegate?.didConnectToDevice()
             }
