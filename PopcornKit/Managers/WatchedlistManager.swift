@@ -73,7 +73,7 @@ open class WatchedlistManager<N: Media & Hashable> {
             var dict = UserDefaults.standard.object(forKey: "\(currentType.rawValue)Progress") as? [String: Float],
             let index = array.index(of: id) {
             array.remove(at: index)
-            dict[id] = 0
+            dict.removeValue(forKey: id)
             UserDefaults.standard.set(dict, forKey: "\(currentType.rawValue)Progress")
             UserDefaults.standard.set(array, forKey: "\(currentType.rawValue)Watchedlist")
         }
