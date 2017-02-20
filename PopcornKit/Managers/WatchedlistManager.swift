@@ -68,7 +68,7 @@ open class WatchedlistManager<N: Media & Hashable> {
      */
     open func remove(_ id: String) {
         TraktManager.shared.remove(id, fromWatchedlistOfType: currentType)
-        TraktManager.shared.scrobble(id, progress: 0, type: currentType, status: .finished)
+        TraktManager.shared.removePlaybackProgress(id)
         if var array = UserDefaults.standard.object(forKey: "\(currentType.rawValue)Watchedlist") as? [String],
             var dict = UserDefaults.standard.object(forKey: "\(currentType.rawValue)Progress") as? [String: Float],
             let index = array.index(of: id) {
@@ -117,14 +117,14 @@ open class WatchedlistManager<N: Media & Hashable> {
     /**
      Stores movie progress and syncs with Trakt if available.
      
-     - Parameter progress:      The progress of the playing video. Possible values range from 0...1.
-     - Parameter forId:         The imdbId for movies and tvdbId for episodes of the media that is playing.
-     - Parameter withStatus:    The status of the item.
+     - Parameter progress:  The progress of the playing video. Possible values range from 0...1.
+     - Parameter id:        The imdbId for movies and tvdbId for episodes of the media that is playing.
+     - Parameter status:    The status of the item.
      */
-    open func setCurrentProgress(_ progress: Float, forId id: String, withStatus status: Trakt.WatchedStatus) {
+    open func setCurrentProgress(_ progress: Float, for id: String, with status: Trakt.WatchedStatus) {
         TraktManager.shared.scrobble(id, progress: progress, type: currentType, status: status)
         var dict = UserDefaults.standard.object(forKey: "\(currentType.rawValue)Progress") as? [String: Float] ?? [String: Float]()
-        dict[id] = progress
+        let _ = progress == 0 ? dict.removeValue(forKey: id) : dict.updateValue(progress, forKey: id)
         progress >= 0.8 ? add(id) : ()
         UserDefaults.standard.set(dict, forKey: "\(currentType.rawValue)Progress")
     }

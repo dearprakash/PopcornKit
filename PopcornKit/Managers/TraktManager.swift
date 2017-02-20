@@ -32,6 +32,7 @@ open class TraktManager: NetworkManager {
      */
     open func scrobble(_ id: String, progress: Float, type: Trakt.MediaType, status: Trakt.WatchedStatus, completion: ((NSError) -> Void)? = nil) {
         guard var credential = OAuthCredential(identifier: "trakt") else { return }
+        guard progress != 0 else { return removePlaybackProgress(id) }
         DispatchQueue.global(qos: .background).async {
             if credential.expired {
                 do {
@@ -148,6 +149,7 @@ open class TraktManager: NetworkManager {
                 for (_, item) in responseObject {
                     guard let type = item["type"].string,
                         let progress = item["progress"].float,
+                        progress != 0,
                         let media = Mapper<T>(context: TraktContext()).map(JSONObject: item[type].dictionaryObject)
                         else { continue }
                     group.enter()
@@ -164,6 +166,29 @@ open class TraktManager: NetworkManager {
                     group.leave()
                 }
                 group.notify(queue: .main, execute: { completion(progressDict, nil) })
+            })
+        }
+    }
+    
+    /**
+     `Nil`s a users playback progress of a specified media. If `id` is invalid, 404 error will be thrown.
+     
+     - Parameter id: The imdbId or tvdbId of the movie, episode or show.
+     
+     - Parameter completion: An optional completion handler called only if an error is thrown.
+     */
+    open func removePlaybackProgress(_ id: String, completion: ((NSError) -> Void)? = nil) {
+        guard var credential = OAuthCredential(identifier: "trakt") else { return }
+        DispatchQueue.global(qos: .background).async {
+            if credential.expired {
+                do {
+                    credential = try OAuthCredential(Trakt.base + Trakt.auth + Trakt.token, refreshToken: credential.refreshToken!, clientID: Trakt.apiKey, clientSecret: Trakt.apiSecret, useBasicAuthentication: false)
+                } catch let error as NSError {
+                    DispatchQueue.main.async(execute: {completion?(error) })
+                }
+            }
+            self.manager.request(Trakt.base + Trakt.sync + Trakt.playback + "/\(id)", method: .delete, encoding: JSONEncoding.default, headers: Trakt.Headers.Authorization(credential.accessToken)).validate().responseJSON(completionHandler: { response in
+                if let error = response.result.error { completion?(error as NSError) }
             })
         }
     }
