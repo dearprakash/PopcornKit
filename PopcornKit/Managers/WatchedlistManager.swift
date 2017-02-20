@@ -68,7 +68,7 @@ open class WatchedlistManager<N: Media & Hashable> {
      */
     open func remove(_ id: String) {
         TraktManager.shared.remove(id, fromWatchedlistOfType: currentType)
-        TraktManager.shared.removePlaybackProgress(id)
+        TraktManager.shared.scrobble(id, progress: 0, type: currentType, status: .finished)
         if var array = UserDefaults.standard.object(forKey: "\(currentType.rawValue)Watchedlist") as? [String],
             var dict = UserDefaults.standard.object(forKey: "\(currentType.rawValue)Progress") as? [String: Float],
             let index = array.index(of: id) {

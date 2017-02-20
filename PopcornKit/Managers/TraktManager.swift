@@ -32,7 +32,7 @@ open class TraktManager: NetworkManager {
      */
     open func scrobble(_ id: String, progress: Float, type: Trakt.MediaType, status: Trakt.WatchedStatus, completion: ((NSError) -> Void)? = nil) {
         guard var credential = OAuthCredential(identifier: "trakt") else { return }
-        guard progress != 0 else { return removePlaybackProgress(id) }
+        guard progress != 0 else { return removePlaybackProgress(id, type: type) }
         DispatchQueue.global(qos: .background).async {
             if credential.expired {
                 do {
@@ -133,16 +133,14 @@ open class TraktManager: NetworkManager {
             switch type {
             case is Movie.Type:
                 mediaType = Trakt.movies
-            case is Show.Type:
-                mediaType = Trakt.shows
             case is Episode.Type:
                 mediaType = Trakt.episodes
             default:
-                mediaType = ""
+                fatalError("Only retrieving progress for movies and episode is supported.")
             }
             let queue = DispatchQueue(label: "com.popcorntimetv.popcornkit.response.queue", attributes: .concurrent)
             self.manager.request(Trakt.base + Trakt.sync + Trakt.playback + mediaType, parameters: Trakt.extended, headers: Trakt.Headers.Authorization(credential.accessToken)).validate().responseJSON(queue: queue, options: .allowFragments, completionHandler: { response in
-                guard let value = response.result.value else { completion([T: Float](), response.result.error as NSError?); return }
+                guard let value = response.result.value else { completion([:], response.result.error as NSError?); return }
                 let responseObject = JSON(value)
                 let group = DispatchGroup()
                 var progressDict = [T: Float]()
@@ -173,11 +171,11 @@ open class TraktManager: NetworkManager {
     /**
      `Nil`s a users playback progress of a specified media. If `id` is invalid, 404 error will be thrown.
      
-     - Parameter id: The imdbId or tvdbId of the movie, episode or show.
+     - Parameter id: The imdbId of the movie or tvdbId of the episode.
      
      - Parameter completion: An optional completion handler called only if an error is thrown.
      */
-    open func removePlaybackProgress(_ id: String, completion: ((NSError) -> Void)? = nil) {
+    open func removePlaybackProgress(_ id: String, type: Trakt.MediaType, completion: ((NSError) -> Void)? = nil) {
         guard var credential = OAuthCredential(identifier: "trakt") else { return }
         DispatchQueue.global(qos: .background).async {
             if credential.expired {
@@ -187,8 +185,31 @@ open class TraktManager: NetworkManager {
                     DispatchQueue.main.async(execute: {completion?(error) })
                 }
             }
-            self.manager.request(Trakt.base + Trakt.sync + Trakt.playback + "/\(id)", method: .delete, encoding: JSONEncoding.default, headers: Trakt.Headers.Authorization(credential.accessToken)).validate().responseJSON(completionHandler: { response in
-                if let error = response.result.error { completion?(error as NSError) }
+            
+            self.manager.request(Trakt.base + Trakt.sync + Trakt.playback + "/\(type.rawValue)", headers: Trakt.Headers.Authorization(credential.accessToken)).validate().responseJSON(completionHandler: { (response) in
+                guard let value = response.result.value else { completion?(response.result.error as! NSError); return }
+                
+                let responseObject = JSON(value)
+                let idType = type == .movies ? "imdb" : "tvdb"
+                
+                var playbackId: Int?
+                let idToFind = id
+                
+                for (_, item) in responseObject {
+                    guard let type = item["type"].string,
+                        let id = item[type]["ids"][idType].string,
+                        idToFind == id,
+                        let playback = item["id"].int
+                        else { continue }
+                    playbackId = playback
+                    break
+                }
+                
+                guard let id = playbackId else { return }
+                
+                self.manager.request(Trakt.base + Trakt.sync + Trakt.playback + "/\(id)", method: .delete, headers: Trakt.Headers.Authorization(credential.accessToken)).validate().responseJSON(completionHandler: { response in
+                    if let error = response.result.error { completion?(error as NSError) }
+                })
             })
         }
     }
