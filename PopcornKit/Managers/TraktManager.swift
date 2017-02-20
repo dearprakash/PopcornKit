@@ -190,19 +190,18 @@ open class TraktManager: NetworkManager {
                 guard let value = response.result.value else { completion?(response.result.error as! NSError); return }
                 
                 let responseObject = JSON(value)
-                let idType = type == .movies ? "imdb" : "tvdb"
                 
                 var playbackId: Int?
-                let idToFind = id
                 
                 for (_, item) in responseObject {
-                    guard let type = item["type"].string,
-                        let id = item[type]["ids"][idType].string,
-                        idToFind == id,
+                    guard let t = item["type"].string,
                         let playback = item["id"].int
                         else { continue }
-                    playbackId = playback
-                    break
+                    let ids = item[t]["ids"]
+                    if (type == .movies && id == ids["imdb"].string) || (type == .episodes && Int(id) == ids["tvdb"].int) {
+                        playbackId = playback
+                        break
+                    }
                 }
                 
                 guard let id = playbackId else { return }
