@@ -598,8 +598,12 @@ extension TraktManager {
      */
     public func loginViewController() -> UIViewController {
         #if os(iOS)
-            state = String.random(15)
-            return SFSafariViewController(url: URL(string: Trakt.base + Trakt.auth + "/authorize?client_id=" + Trakt.apiKey + "&redirect_uri=PopcornTime%3A%2F%2Ftrakt&response_type=code&state=\(state!)")!)
+            state = .random(of: 15)
+            
+            let vc = SFSafariViewController(url: URL(string: Trakt.base + Trakt.auth + "/authorize?client_id=" + Trakt.apiKey + "&redirect_uri=PopcornTime%3A%2F%2Ftrakt&response_type=code&state=\(state!)")!)
+            vc.modalPresentationStyle = .formSheet
+            
+            return vc
         #else
             return TraktAuthenticationViewController(nibName: "TraktAuthenticationViewController", bundle: TraktAuthenticationViewController.bundle)
         #endif
