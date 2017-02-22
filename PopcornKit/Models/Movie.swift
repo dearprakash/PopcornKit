@@ -78,6 +78,24 @@ public struct Movie: Media, Equatable {
     /// If poster image is available, it is returned with size 1500*1000
     public var largeCoverImage: String?
     
+    /// Convenience variable. Boolean value indicating the watched status of the movie.
+    public var isWatched: Bool {
+        get {
+            return WatchedlistManager<Movie>.movie.isAdded(id)
+        } set (add) {
+            add ? WatchedlistManager<Movie>.movie.add(id) : WatchedlistManager<Movie>.movie.remove(id)
+        }
+    }
+    
+    /// Convenience variable. Boolean value indicating whether or not the movie has been added the users watchlist.
+    public var isAddedToWatchlist: Bool {
+        get {
+            return WatchlistManager<Movie>.movie.isAdded(self)
+        } set (add) {
+            add ? WatchlistManager<Movie>.movie.add(self) : WatchlistManager<Movie>.movie.remove(self)
+        }
+    }
+    
 
     /// All the people that worked on the movie. Empty by default. Must be filled by calling `getPeople:forMediaOfType:id:completion` on `TraktManager`.
     public var crew = [Crew]()

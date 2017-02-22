@@ -40,6 +40,15 @@ public struct Episode: Media, Equatable {
     /// The corresponding show object.
     public var show: Show!
     
+    /// Convenience variable. Boolean value indicating the watched status of the episode.
+    public var isWatched: Bool {
+        get {
+            return WatchedlistManager<Episode>.episode.isAdded(id)
+        } set (add) {
+            add ? WatchedlistManager<Episode>.episode.add(id) : WatchedlistManager<Episode>.episode.remove(id)
+        }
+    }
+    
     
     /// If fanart image is available, it is returned with size 600*338. Will be `nil` until an image is obtained by calling `getEpisodeMetadata:showId:episodeNumber:seasonNumber:completion:` on `TraktManager`.
     public var smallBackgroundImage: String? {

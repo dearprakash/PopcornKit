@@ -87,6 +87,16 @@ public struct Show: Media, Equatable {
     public var largeCoverImage: String?
     
     
+    /// Convenience variable. Boolean value indicating whether or not the show has been added the users watchlist.
+    public var isAddedToWatchlist: Bool {
+        get {
+            return WatchlistManager<Show>.show.isAdded(self)
+        } set (add) {
+            add ? WatchlistManager<Show>.show.add(self) : WatchlistManager<Show>.show.remove(self)
+        }
+    }
+    
+    
     /// All the people that worked on the show. Empty by default. Must be filled by calling `getPeople:forMediaOfType:id:completion` on `TraktManager`.
     public var crew = [Crew]()
     
