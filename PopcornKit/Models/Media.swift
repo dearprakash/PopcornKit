@@ -19,15 +19,11 @@ public protocol Media: Mappable {
     var mediumCoverImage: String? { get }
     var largeCoverImage: String? { get set }
     
-    /// Will be `nil` if Media is Show.
-    var subtitles: [Subtitle] { get set }
-    /// Will be `nil` if Media is Show.
-    var currentSubtitle: Subtitle? { get set }
+    /// Will be empty if Media is Show.
+    var subtitles: [Subtitle] { get nonmutating set }
     
-    /// Will be `nil` if Media is Show.
+    /// Will be empty if Media is Show.
     var torrents: [Torrent] { get set }
-    /// Will be `nil` if Media is Show.
-    var currentTorrent: Torrent? { get set }
     
     init(title: String, id: String, tmdbId: Int?, slug: String, summary: String, torrents: [Torrent], subtitles: [Subtitle], largeBackgroundImage: String?, largeCoverImage: String?)
 }
@@ -35,11 +31,9 @@ public protocol Media: Mappable {
 // MARK: - Optional vars
 
 extension Media {
-    public var subtitles: [Subtitle] { get { return [] } set {} }
-    public var currentSubtitle: Subtitle? { get { return nil } set {} }
+    public var subtitles: [Subtitle] { get { return [] } nonmutating set {} }
     
     public var torrents: [Torrent] { get { return [] } set {} }
-    public var currentTorrent: Torrent? { get { return nil } set {} }
     
     public var smallCoverImage: String? { return nil }
     public var mediumCoverImage: String? { return nil }
