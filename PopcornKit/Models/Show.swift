@@ -137,9 +137,8 @@ public struct Show: Media, Equatable {
             self.airDay = try? map.value("air_day")
             self.airTime = try? map.value("air_time")
         }
-        self.summary = ((try? map.value("synopsis")) ?? "No summary available.").cleaned
-        let title: String = try map.value("title")
-        self.title = title.cleaned
+        self.summary = (try? map.value("synopsis")) ?? "No summary available."
+        self.title = try map.value("title")
         self.status = try? map.value("status")
         self.runtime = try? map.value("runtime")
         self.genres = (try? map.value("genres")) ?? [String]()

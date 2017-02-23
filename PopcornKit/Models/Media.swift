@@ -55,23 +55,45 @@ extension String {
     }
 }
 
-open class StringTransform: TransformType {
-    public typealias Object = String
-    public typealias JSON = Int
+class IntTransform: TransformType {
+    typealias Object = Int
+    typealias JSON = String
     
-    public init() {}
+    init() {}
     
-    open func transformFromJSON(_ value: Any?) -> String? {
-        if let int = value as? Int {
-            return String(int)
+    func transformFromJSON(_ value: Any?) -> Object? {
+        if let json = value as? JSON {
+            return Object(json)
         }
         
         return nil
     }
     
-    open func transformToJSON(_ value: String?) -> Int? {
-        if let string = value {
-            return Int(string)
+    func transformToJSON(_ value: Object?) -> JSON? {
+        if let object = value {
+            return JSON(object)
+        }
+        return nil
+    }
+}
+
+class StringTransform: TransformType {
+    typealias Object = String
+    typealias JSON = Int
+    
+    init() {}
+    
+    func transformFromJSON(_ value: Any?) -> Object? {
+        if let json = value as? JSON {
+            return Object(json)
+        }
+        
+        return nil
+    }
+    
+    func transformToJSON(_ value: Object?) -> JSON? {
+        if let object = value {
+            return JSON(object)
         }
         return nil
     }
