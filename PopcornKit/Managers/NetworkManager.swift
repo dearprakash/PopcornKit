@@ -2,8 +2,8 @@ import Foundation
 import Alamofire
 
 public struct Trakt {
-    static let apiKey = "a3b34d7ce9a7f8c1bb216eed6c92b11f125f91ee0e711207e1030e7cdc965e19"
-    static let apiSecret = "22afa0081bea52793740395c6bc126d15e1f72b0bfb89bbd5729310079f1a01c"
+    static let apiKey = "d3b0811a35719a67187cba2476335b2144d31e5840d02f687fbf84e7eaadc811"
+    static let apiSecret = "f047aa37b81c87a990e210559a797fd4af3b94c16fb6d22b62aa501ca48ea0a4"
     static let base = "https://api.trakt.tv"
     static let shows = "/shows"
     static let movies = "/movies"
