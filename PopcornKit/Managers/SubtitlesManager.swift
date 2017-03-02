@@ -27,7 +27,7 @@ open class SubtitlesManager: NetworkManager {
     open func search(_ episode: Episode? = nil, imdbId: String? = nil, limit: String = "300", completion:@escaping ([Subtitle], NSError?) -> Void) {
         guard let token = token else {
             login() { error in
-                guard error == nil else { completion([Subtitle](), error); return }
+                guard error == nil else { completion([], error); return }
                 self.search(episode, imdbId: imdbId, limit: limit, completion: completion)
             }
             return
@@ -45,14 +45,14 @@ open class SubtitlesManager: NetworkManager {
         self.manager.requestXMLRPC(secureBaseURL, methodName: "SearchSubtitles", parameters: [token, [params], limit], headers: ["User-Agent": userAgent]).validate().responseXMLRPC(queue: queue, completionHandler: { response in
             guard let value = response.result.value,
                 let status = value[0]["status"].string?.components(separatedBy: " ").first,
-                let data = value[0]["data"].array
-                , response.result.isSuccess && status == "200" else { DispatchQueue.main.async(execute: {completion([Subtitle](), response.result.error as NSError?)}); return}
+                let data = value[0]["data"].array,
+                response.result.isSuccess && status == "200" else { DispatchQueue.main.async(execute: {completion([], response.result.error as NSError?)}); return}
             var subtitles = [Subtitle]()
             for info in data {
                 guard let languageName = info["LanguageName"].string,
                     let subDownloadLink = info["SubDownloadLink"].string,
-                    let ISO639 = info["ISO639"].string
-                    , !subtitles.contains(where: {$0.language == languageName}) else { continue }
+                    let ISO639 = info["ISO639"].string,
+                    !subtitles.contains(where: {$0.language == languageName}) else { continue }
                 subtitles.append(Subtitle(language: languageName, link: subDownloadLink, ISO639: ISO639))
             }
             subtitles.sort(by: { $0.language < $1.language })
@@ -68,9 +68,9 @@ open class SubtitlesManager: NetworkManager {
     public func login(_ completion: ((NSError?) -> Void)?) {
         self.manager.requestXMLRPC(secureBaseURL, methodName: "LogIn", parameters: ["", "", "en", userAgent]).validate().responseXMLRPC { response in
             guard let value = response.result.value,
-                let status = value[0]["status"].string?.components(separatedBy: " ").first
-                , response.result.isSuccess && status == "200" else {
-                    completion?(response.result.error as NSError?)
+                let status = value[0]["status"].string?.components(separatedBy: " ").first,
+                response.result.isSuccess && status == "200" else {
+                    completion?(response.result.error as? NSError ?? NSError(domain: "com.popcorntimetv.popcornkit.error", code: -1, userInfo: [NSLocalizedDescriptionKey: "An unknown error occured."]))
                     return
             }
             self.token = value[0]["token"].string
