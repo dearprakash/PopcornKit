@@ -46,7 +46,7 @@ public struct Show: Media, Equatable {
     public var airTime: String?
     
     /// Average runtime of each episode of the show rounded to the nearest minute. Will be `nil` until `getInfo:imdbId:completion` is called on `ShowManager` and shows are updated.
-    public var runtime: String?
+    public var runtime: Int?
     
     /// Status of the show. ie. Returning series, Ended etc. Will be `nil` until `getInfo:imdbId:completion` is called on `ShowManager` and shows are updated.
     public var status: String?
@@ -140,9 +140,9 @@ public struct Show: Media, Equatable {
         self.summary = (try? map.value("synopsis")) ?? "No summary available."
         self.title = try map.value("title")
         self.status = try? map.value("status")
-        self.runtime = try? map.value("runtime")
-        self.genres = (try? map.value("genres")) ?? [String]()
-        self.episodes = (try? map.value("episodes")) ?? [Episode]()
+        self.runtime = try? map.value("runtime", using: IntTransform())
+        self.genres = (try? map.value("genres")) ?? []
+        self.episodes = (try? map.value("episodes")) ?? []
         self.tmdbId = try? map.value("ids.tmdb")
         self.network = try? map.value("network")
         
@@ -165,7 +165,7 @@ public struct Show: Media, Equatable {
         self.largeCoverImage = largeCoverImage
         self.year = "Unknown"
         self.rating = 0.0
-        self.runtime = "0"
+        self.runtime = 0
         self.tvdbId = "0000000"
     }
     
@@ -185,7 +185,7 @@ public struct Show: Media, Equatable {
             largeCoverImage >>> map["images.poster"]
             largeBackgroundImage >>> map["images.fanart"]
             title >>> map["title"]
-            runtime >>> map["runtime"]
+            runtime >>> (map["runtime"], IntTransform())
             summary >>> map["synopsis"]
             genres >>> map["genres"]
             status >>> map["status"]
